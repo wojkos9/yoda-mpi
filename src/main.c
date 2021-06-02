@@ -21,11 +21,11 @@ queue_t qu = {0};
 void try_reserve_place() {
     if (ack_count == cown - 1) {
         printf("%d: ", rank);
-        qprint(&qu);
+        if (DEBUG_LVL >= 30) qprint(&qu);
         place = qrm1(&qu, rank) + offset;
         ++offset;
         state = ST_WAIT;
-        println("PLACE %d", place);
+        debug(10, "PLACE %d", place);
     }
 }
 
@@ -40,7 +40,7 @@ void comm_th() {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         lamport = MAX(lamport, pkt.ts) + 1;
 
-        println("RECV %d from %d", status.MPI_TAG, pkt.src);
+        debug(20, "RECV %d from %d", status.MPI_TAG, pkt.src);
 
         switch (status.MPI_TAG) {
             case PAR:
@@ -84,7 +84,7 @@ int psend1(int dest, MTYP typ, int data) {
     pkt.src = rank;
     pkt.data = data;
     MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
-    println("SEND %d to %d", typ, dest);
+    debug(30, "SEND %d to %d", typ, dest);
 }
 
 int psend(int dest, MTYP typ) {
@@ -111,6 +111,8 @@ int main(int argc, char **argv)
 {
     init(&argc, &argv);
 
+    DEBUG_LVL = 10;
+
     if (argc >= 4) {
         cx = atoi(argv[1]);
         cy = atoi(argv[2]);
@@ -126,7 +128,7 @@ int main(int argc, char **argv)
     cown = *cnts[styp];
     copp = *cnts[otyp];
 
-    println("Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
+    debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
 
     start_order();
 

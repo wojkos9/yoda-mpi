@@ -16,8 +16,12 @@
 #define P_SET(X) printf("%c[%d;%dm", 27, 1, 31 + (6 + X) % 7);
 #define P_CLR printf("%c[%d;%dm", 27, 0, 37);
 
-/* printf ale z kolorkami i automatycznym wyświetlaniem RANK. Patrz debug wyżej po szczegóły, jak działa ustawianie kolorków */
+/* printf colored based on rank */
 #define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d]: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, ##__VA_ARGS__, 27, 0, 37);
+
+static int DEBUG_LVL = 0;
+
+#define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__);
 
 #define MAX(a, b) ((a)>(b)?(a):(b))
 
