@@ -25,5 +25,6 @@ typedef struct {
 
 extern int psend(int dest, MTYP typ);
 extern int psend1(int dest, MTYP typ, int data);
+extern int psend_to_typ(PTYP ptyp, MTYP mtyp, int data);
 
 #endif // __MAIN_H__

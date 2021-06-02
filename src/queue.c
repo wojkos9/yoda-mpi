@@ -11,15 +11,19 @@ int qput(queue_t *qu, int x, int y) {
 }
 
 int qputv(queue_t *qu, val_t v) {
-    node_t *node = qu->root;
+    
+    node_t *node;
     int pos = 1;
 
     node_t *next = (node_t *) malloc(sizeof(node_t));
     next->val = v;
 
+    pthread_mutex_lock(&qu->mut);
+    node = qu->root;
     if (!node || !VAL_GT(v, node->val)) {
         next->next = qu->root;
         qu->root = next;
+        pthread_mutex_unlock(&qu->mut);
         return 0;
     }
 
@@ -30,6 +34,7 @@ int qputv(queue_t *qu, val_t v) {
     
     next->next = node->next;
     node->next = next;
+    pthread_mutex_unlock(&qu->mut);
     return pos;
 }
 
@@ -43,15 +48,18 @@ int qdel(queue_t *qu) {
         node = t;
         ++c;
     }
+    pthread_mutex_destroy(&qu->mut);
     return c;
 }
 
 int qrm1(queue_t *qu, int y) {
+    pthread_mutex_lock(&qu->mut);
     node_t *node = qu->root;
 
     if (node && node->val.y == y) {
         node_t *t = qu->root;
         qu->root = node->next;
+        pthread_mutex_unlock(&qu->mut);
         free(t);
         return 0;
     }
@@ -63,12 +71,14 @@ int qrm1(queue_t *qu, int y) {
         if (node->next->val.y == y) {
             node_t *t = node->next;
             node->next = node->next->next;
+            pthread_mutex_unlock(&qu->mut);
             free(t);
             return c;
         }
         
         node = node->next;
     }
+    pthread_mutex_unlock(&qu->mut);
     return -1;
 }
 

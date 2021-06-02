@@ -10,22 +10,24 @@
 #include <stdlib.h>
 
 #include <pthread.h>
+#include <unistd.h>
 
 MPI_Datatype PAK_T;
 
 int cx, cy, cz, copp, cown, opp_base;
 int offset;
-int place;
+int place = 0;
 
 int *places;
 
-queue_t qu = {0};
+queue_t qu = QUEUE_INIT;
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
 
 void try_reserve_place() {
     if (ack_count == cown - 1) {
+        ack_count = 0;
         if (DEBUG_LVL >= 30) qprint(&qu);
         place = qrm1(&qu, rank) + offset;
         ++offset;
@@ -81,10 +83,32 @@ void comm_th() {
     }
 }
 
+void start_order() {
+    int ts = lamport;
+    qput(&qu, ts, rank);
+    ack_count = 0;
+    if (cown > 1) {
+        psend_to_typ(styp, PAR, ts);
+    } else {
+        try_reserve_place();
+    }
+    
+}
+
 void* main_th(void *p) {
-    pthread_mutex_lock(&mut);
-    debug(5, "PAIR %d", pair);
-    psend(rank, FIN);
+    debug(20, "MAIN %d %d %d", rank, cown, copp)
+    while(state != ST_FIN) {
+        start_order();
+        pthread_mutex_lock(&mut);
+        debug(5, "PAIR %d @%d", pair, place);
+        state = ST_IDLE;
+        place = -1;
+        pair = -1;
+        usleep(500000);
+        if (rank == 0) printf("\n\n\n");
+        usleep(500000);
+    }
+    
     return 0;
 }
 
@@ -133,18 +157,15 @@ int psend_to_typ(PTYP ptyp, MTYP mtyp, int data) {
     }
 }
 
-void start_order() {
-    int ts = lamport;
-    qput(&qu, ts, rank);
-    ack_count = 0;
-    psend_to_typ(styp, PAR, ts);
-}
-
 int main(int argc, char **argv)
 {
     init(&argc, &argv);
 
     DEBUG_LVL = 10;
+
+    if (argc > 1) {
+        DEBUG_LVL = atoi(argv[1]);
+    }
 
     if (argc >= 4) {
         cx = atoi(argv[1]);
@@ -172,7 +193,8 @@ int main(int argc, char **argv)
 
     pthread_create(&th, NULL, main_th, NULL);
 
-    start_order();
+    ack_count = 0;
+    // start_order();
 
     comm_th();
 

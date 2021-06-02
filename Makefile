@@ -1,5 +1,5 @@
 CC := mpicc
-CFLAGS := -pthread
+CFLAGS := -pthread -g
 SRC := src
 BIN := proj
 

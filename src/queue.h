@@ -1,6 +1,8 @@
 #ifndef __QUEUE_H__
 #define __QUEUE_H__
 
+#include <pthread.h>
+
 typedef struct {
     int x, y;
 } val_t;
@@ -15,9 +17,10 @@ typedef struct node_t node_t;
 
 typedef struct {
 node_t *root;
+pthread_mutex_t mut;
 } queue_t;
 
-static queue_t QUEUE_INIT;
+#define QUEUE_INIT {0, PTHREAD_MUTEX_INITIALIZER}
 
 int qput(queue_t *qu, int x, int y);
 int qputv(queue_t *qu, val_t v);

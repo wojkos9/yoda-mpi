@@ -7,7 +7,7 @@ typedef enum {
     ST_IDLE, ST_FIN, ST_WAIT, ST_ORD, ST_PAIR
 } ST;
 
-ST state;
+static ST state;
 
 static int size, rank, lamport, ack_count;
 static PTYP styp, otyp;
