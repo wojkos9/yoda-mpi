@@ -6,7 +6,7 @@
 extern MPI_Datatype PAK_T;
 
 typedef enum {
-    REQ, ACK, PAR
+    REQ, ACK, PAR, ORD, FIN
 } MTYP;
 
 typedef enum {

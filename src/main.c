@@ -9,23 +9,36 @@
 
 #include <stdlib.h>
 
+#include <pthread.h>
+
 MPI_Datatype PAK_T;
 
-int cx, cy, cz, copp, cown;
+int cx, cy, cz, copp, cown, opp_base;
 int offset;
 int place;
 
+int *places;
+
 queue_t qu = {0};
+
+pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
 
 void try_reserve_place() {
     if (ack_count == cown - 1) {
-        printf("%d: ", rank);
         if (DEBUG_LVL >= 30) qprint(&qu);
         place = qrm1(&qu, rank) + offset;
         ++offset;
         state = ST_WAIT;
         debug(10, "PLACE %d", place);
+        psend_to_typ(otyp, ORD, place);
+        for(int i = 0; i < copp; i++) {
+            if (places[i] == place) {
+                pair = i + opp_base;
+                state = ST_PAIR;
+                pthread_mutex_unlock(&mut);
+            }
+        }
     }
 }
 
@@ -34,7 +47,7 @@ void comm_th() {
     MPI_Status status;
     packet_t pkt;
 
-    int cond = 0;
+    int i;
 
     while (state != ST_FIN) {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -51,8 +64,28 @@ void comm_th() {
                 ++ack_count;
                 try_reserve_place();
                 break;
+            case ORD:
+                i = pkt.src - opp_base;
+                places[i] = pkt.data;
+                if (state == ST_WAIT && pkt.data == place) {
+                    pair = pkt.src;
+                    state = ST_PAIR;
+                    pthread_mutex_unlock(&mut);
+                }
+                break;
+            case FIN:
+                debug(0, "FIN");
+                state = ST_FIN;
+                break;
         }
     }
+}
+
+void* main_th(void *p) {
+    pthread_mutex_lock(&mut);
+    debug(5, "PAIR %d", pair);
+    psend(rank, FIN);
+    return 0;
 }
 
 void init(int *argc, char ***argv)
@@ -118,8 +151,8 @@ int main(int argc, char **argv)
         cy = atoi(argv[2]);
         cz = atoi(argv[3]);
     } else {
-        //cy = cx = size / 2;
-        cx = size;
+        cy = cx = size / 2;
+        // cx = size;
         //cz = size - cx - cy;
     }
 
@@ -127,13 +160,25 @@ int main(int argc, char **argv)
     otyp = styp < PT_Z ? 1-styp : PT_X;
     cown = *cnts[styp];
     copp = *cnts[otyp];
+    opp_base = styp == PT_X ? copp : 0;
+
+    places = malloc(sizeof(int) * copp);
 
     debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
+
+    pthread_mutex_lock(&mut);
+
+    pthread_t th;
+
+    pthread_create(&th, NULL, main_th, NULL);
 
     start_order();
 
     comm_th();
 
+    pthread_join(th, NULL);
+
+    free(places);
     MPI_Finalize();
     return 0;
 }
