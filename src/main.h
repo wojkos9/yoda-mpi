@@ -6,7 +6,7 @@
 extern MPI_Datatype PAK_T;
 
 typedef enum {
-    REQ, ACK, PAR, ORD, FIN
+    REQ, ACK, PAR, ORD, FIN, REL
 } MTYP;
 
 typedef enum {
@@ -26,5 +26,7 @@ typedef struct {
 extern int psend(int dest, MTYP typ);
 extern int psend1(int dest, MTYP typ, int data);
 extern int psend_to_typ(PTYP ptyp, MTYP mtyp, int data);
+extern int psend_to_typ_except(PTYP ptyp, MTYP mtyp, int data, int except);
+extern int psend_to_typ_all(PTYP ptyp, MTYP mtyp, int data);
 
 #endif // __MAIN_H__

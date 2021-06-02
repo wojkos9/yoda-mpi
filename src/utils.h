@@ -17,9 +17,13 @@
 #define P_CLR printf("%c[%d;%dm", 27, 0, 37);
 
 /* printf colored based on rank */
+#define colbeg printf("%c[%d;%dm [tid %d ts %d]: ", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport)
+#define colend printf("%c[%d;%dm\n", 27, 0, 37)
 #define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d]: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, ##__VA_ARGS__, 27, 0, 37);
 
-static int DEBUG_LVL = 0;
+#define col(...) colbeg, __VA_ARGS__, colend
+
+extern int DEBUG_LVL;
 
 #define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__);
 

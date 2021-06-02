@@ -83,6 +83,8 @@ int qrm1(queue_t *qu, int y) {
 }
 
 void qprint(queue_t *qu) {
+
+    pthread_mutex_lock(&qu->mut);
     node_t *node = qu->root;
 
     while(node) {
@@ -91,5 +93,6 @@ void qprint(queue_t *qu) {
             : '|');
         node = node->next;
     }
-    printf("\n");
+    // printf("\n");
+    pthread_mutex_unlock(&qu->mut);
 }

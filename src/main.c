@@ -12,27 +12,40 @@
 #include <pthread.h>
 #include <unistd.h>
 
+ST state;
+
+int size, rank, lamport, ack_count;
+PTYP styp, otyp;
+int pair = -1;
+
+int DEBUG_LVL;
+
 MPI_Datatype PAK_T;
 
 int cx, cy, cz, copp, cown, opp_base;
 int offset;
-int place = 0;
+int place = 0, last_place = -1;
 
 int *places;
 
 queue_t qu = QUEUE_INIT;
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
 
 
 void try_reserve_place() {
-    if (ack_count == cown - 1) {
+    if (ack_count == cown) {
         ack_count = 0;
-        if (DEBUG_LVL >= 30) qprint(&qu);
+        if (DEBUG_LVL >= 9) {
+            col(printf("RESERVING +%d: ", offset), qprint(&qu));
+        }
+        pthread_mutex_lock(&lamut);
         place = qrm1(&qu, rank) + offset;
         ++offset;
+        pthread_mutex_unlock(&lamut);
         state = ST_WAIT;
-        debug(10, "PLACE %d", place);
+        debug(9, "PLACE %d", place);
         psend_to_typ(otyp, ORD, place);
         for(int i = 0; i < copp; i++) {
             if (places[i] == place) {
@@ -60,11 +73,24 @@ void comm_th() {
         switch (status.MPI_TAG) {
             case PAR:
                 qput(&qu, pkt.data, pkt.src);
+                if (DEBUG_LVL >= 15) {
+                    col(printf("ACKING "), qprint(&qu));
+                }
                 psend(pkt.src, ACK);
                 break;
             case ACK:
-                ++ack_count;
-                try_reserve_place();
+                if (state == ST_ORD) {
+                    debug(15, "ACK <- %d", pkt.src);
+                    ++ack_count;
+                    try_reserve_place();
+                } else if (state == ST_POST) {
+                    ++ack_count;
+                    if (ack_count == cown - 1) {
+                        state = ST_IDLE;
+                        pthread_mutex_unlock(&mut);
+                    }
+                }
+                
                 break;
             case ORD:
                 i = pkt.src - opp_base;
@@ -79,34 +105,49 @@ void comm_th() {
                 debug(0, "FIN");
                 state = ST_FIN;
                 break;
+            case REL:
+                pthread_mutex_lock(&lamut);
+                qrm1(&qu, pkt.src);
+                offset += 1;
+                pthread_mutex_unlock(&lamut);
+                psend(pkt.src, ACK);
+                break;
         }
     }
 }
 
 void start_order() {
-    int ts = lamport;
-    qput(&qu, ts, rank);
     ack_count = 0;
+    state = ST_ORD;
     if (cown > 1) {
-        psend_to_typ(styp, PAR, ts);
+        psend_to_typ_all(styp, PAR, lamport);
     } else {
         try_reserve_place();
     }
     
 }
+void release_place() {
+    ack_count = 0;
+    state = ST_POST;
+    psend_to_typ(styp, REL, 0);
+}
+
 
 void* main_th(void *p) {
     debug(20, "MAIN %d %d %d", rank, cown, copp)
     while(state != ST_FIN) {
         start_order();
         pthread_mutex_lock(&mut);
-        debug(5, "PAIR %d @%d", pair, place);
-        state = ST_IDLE;
+        debug(10, "PAIR %d @ %d", pair, place);
         place = -1;
         pair = -1;
         usleep(500000);
         if (rank == 0) printf("\n\n\n");
         usleep(500000);
+
+        release_place();
+        pthread_mutex_lock(&mut);
+        state = ST_IDLE;
     }
     
     return 0;
@@ -135,33 +176,11 @@ void init(int *argc, char ***argv)
     srand(rank);
 }
 
-int psend1(int dest, MTYP typ, int data) {
-    packet_t pkt;
-    pkt.ts = ++lamport;
-    pkt.src = rank;
-    pkt.data = data;
-    MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
-    debug(30, "SEND %d to %d", typ, dest);
-}
-
-int psend(int dest, MTYP typ) {
-    psend1(dest, typ, 0);
-}
-
-int psend_to_typ(PTYP ptyp, MTYP mtyp, int data) {
-    int c0 = ptyp==PT_X ? 0 : (ptyp == PT_Y ? cx : cx+cy); 
-    for (int i = c0; i < c0 + *cnts[ptyp]; i++) {
-        if (i != rank) {
-            psend1(i, mtyp, data);
-        }
-    }
-}
-
 int main(int argc, char **argv)
 {
     init(&argc, &argv);
 
-    DEBUG_LVL = 10;
+    DEBUG_LVL = 9;
 
     if (argc > 1) {
         DEBUG_LVL = atoi(argv[1]);

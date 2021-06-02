@@ -4,13 +4,13 @@
 #include "main.h"
 
 typedef enum {
-    ST_IDLE, ST_FIN, ST_WAIT, ST_ORD, ST_PAIR
+    ST_IDLE, ST_FIN, ST_WAIT, ST_ORD, ST_PAIR, ST_POST
 } ST;
 
-static ST state;
+extern ST state;
 
-static int size, rank, lamport, ack_count;
-static PTYP styp, otyp;
-static int pair = -1;
+extern int size, rank, lamport, ack_count;
+extern PTYP styp, otyp;
+extern int pair;
 
 #endif // STATE_H_
