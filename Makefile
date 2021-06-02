@@ -5,15 +5,15 @@ BIN := proj
 
 OUT := out
 
-$(OUT)/$(BIN): $(SRC)/*.c
-	$(CC) -o$@ $^ $(CFLAGS)
+$(OUT)/$(BIN): $(SRC)/*
+	$(CC) -o$@ $(wildcard $(SRC)/*.c) $(CFLAGS)
 
 .PHONY: clean
 clean:
-	rm $(BIN)
+	rm $(OUT)/$(BIN)
 
 run-%: $(OUT)/$(BIN)
-	mpirun -np $(@:run-%=%) $< $(ARGS)
+	mpirun --oversubscribe -np $(@:run-%=%) $< $(ARGS)
 
 test/out/test-%: test/test-%.c $(SRC)/%.c
 	gcc -o $@ $^
