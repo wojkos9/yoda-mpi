@@ -3,8 +3,6 @@
 
 #include "queue.h"
 
-#define VAL_GT(v1, v2) (v1.x > v2.x || v1.x == v2.x && v1.y > v2.y)
-
 int qput(queue_t *qu, int x, int y) {
     val_t v = {x, y};
     qputv(qu, v);

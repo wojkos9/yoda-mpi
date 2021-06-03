@@ -12,6 +12,12 @@
 #include <pthread.h>
 #include <unistd.h>
 
+#include "shm.h"
+
+int HAS_SHM = 1;
+
+
+
 ST state;
 
 int size, rank, lamport, ack_count;
@@ -26,9 +32,12 @@ int cx, cy, cz, copp, cown, opp_base;
 int offset;
 int place = 0, last_place = -1;
 
+val_t own_req;
+
 int *places;
 
 queue_t qu = QUEUE_INIT;
+queue_t qu_x = QUEUE_INIT;
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
@@ -68,7 +77,7 @@ void comm_th() {
         lamport = MAX(lamport, pkt.ts) + 1;
         pthread_mutex_unlock(&lamut);
 
-        debug(20, "RECV %d from %d", status.MPI_TAG, pkt.src);
+        debug(20, "RECV %s from %d", mtyp_map[status.MPI_TAG], pkt.src);
 
         switch (status.MPI_TAG) {
             case PAR:
@@ -92,6 +101,17 @@ void comm_th() {
                 }
                 
                 break;
+            case REQ:
+                if (state != ST_PAIR) {
+                    psend(pkt.src, ACK);
+                } else {
+                    val_t req = {pkt.data, pkt.src};
+                    if (VAL_GT(req, own_req)) {
+                        psend(pkt.src, ACK);
+                    } else {
+                        qputv(&qu_x, req);
+                    }
+                }
             case ORD:
                 i = pkt.src - opp_base;
                 places[i] = pkt.data;
@@ -110,6 +130,10 @@ void comm_th() {
                 offset += 1;
                 psend(pkt.src, ACK);
                 break;
+            case MEM:
+                HAS_SHM = pkt.data;
+                pthread_mutex_unlock(&memlock);
+                break;
         }
     }
 }
@@ -124,23 +148,39 @@ void start_order() {
     } else {
         try_reserve_place();
     }
-    
 }
+
+void start_enter_crit() {
+
+}
+
 void release_place() {
     ack_count = 0;
     state = ST_POST;
     psend_to_typ(styp, REL, 0);
 }
 
-
 void* main_th(void *p) {
     debug(20, "MAIN %d %d %d", rank, cown, copp)
+
+    if (HAS_SHM) {
+        pthread_mutex_lock(&memlock);
+        init_shm();
+        shm_info_arr[rank].st = 1;
+    }
+
     while(state != ST_FIN) {
         start_order();
         pthread_mutex_lock(&mut);
         debug(10, "PAIR %d @ %d", pair, place);
+
+        if (HAS_SHM) {
+            shm_info_arr[rank].st += 1;
+        }
+
         place = -1;
         pair = -1;
+
         usleep(50000);
         if (rank == 0) printf("\n\n\n");
         usleep(50000);
@@ -159,7 +199,7 @@ void init(int *argc, char ***argv)
     MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
     // check_thread_support(provided);
 
-    const int nitems = 3; /* bo packet_t ma trzy pola */
+    const int nitems = 3;
     int blocklengths[3] = {1,1,1};
     MPI_Datatype typy[3] = {MPI_INT, MPI_INT, MPI_INT};
 

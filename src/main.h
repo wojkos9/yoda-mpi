@@ -3,11 +3,32 @@
 
 #include <mpi.h>
 
+#include "macro_expand.h"
+
 extern MPI_Datatype PAK_T;
 
+#define PKT_TYPES \
+(REQ) \
+(ACK) \
+(PAR) \
+(ORD) \
+(FIN) \
+(REL) \
+(MEM)
+
 typedef enum {
-    REQ, ACK, PAR, ORD, FIN, REL
+#define EXPAND_FUN EXPAND
+    FUN_APPLY(PKT_TYPES)
+#undef EXPAND_FUN
 } MTYP;
+
+#define mkmtyp(t) #t
+
+static char *mtyp_map[] = {
+#define EXPAND_FUN QUOTE_EXPAND
+    FUN_APPLY(PKT_TYPES)
+#undef EXPAND_FUN
+};
 
 typedef enum {
     PT_X, PT_Y, PT_Z
@@ -28,5 +49,8 @@ extern int psend1(int dest, MTYP typ, int data);
 extern int psend_to_typ(PTYP ptyp, MTYP mtyp, int data);
 extern int psend_to_typ_except(PTYP ptyp, MTYP mtyp, int data, int except);
 extern int psend_to_typ_all(PTYP ptyp, MTYP mtyp, int data);
+extern int psend_to_all(MTYP mtyp, int data);
+
+
 
 #endif // __MAIN_H__

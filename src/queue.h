@@ -7,6 +7,8 @@ typedef struct {
     int x, y;
 } val_t;
 
+#define VAL_GT(v1, v2) (v1.x > v2.x || v1.x == v2.x && v1.y > v2.y)
+
 struct node_t{
     val_t val;
     struct node_t *next;
