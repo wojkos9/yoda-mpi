@@ -14,7 +14,11 @@ extern MPI_Datatype PAK_T;
 (ORD) \
 (FIN) \
 (REL) \
-(MEM)
+(MEM) \
+(DEC) \
+(STA) \
+(END) \
+(DACK)
 
 typedef enum {
 #define EXPAND_FUN EXPAND
@@ -50,7 +54,11 @@ extern int psend_to_typ(PTYP ptyp, MTYP mtyp, int data);
 extern int psend_to_typ_except(PTYP ptyp, MTYP mtyp, int data, int except);
 extern int psend_to_typ_all(PTYP ptyp, MTYP mtyp, int data);
 extern int psend_to_all(MTYP mtyp, int data);
+extern int sync_all_with_msg(MTYP mtyp, int data);
 
+int parse_args(int argc, char *argv[]);
+
+extern int energy;
 
 
 #endif // __MAIN_H__

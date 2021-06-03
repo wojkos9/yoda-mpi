@@ -4,7 +4,7 @@
 #include "main.h"
 
 typedef enum {
-    ST_IDLE, ST_FIN, ST_WAIT, ST_ORD, ST_PAIR, ST_POST
+    ST_IDLE, ST_FIN, ST_WAIT, ST_ORD, ST_PAIR, ST_CRIT, ST_WORK, ST_LEAVE, ST_POST
 } ST;
 
 extern ST state;

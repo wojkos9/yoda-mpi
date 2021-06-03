@@ -80,6 +80,19 @@ int qrm1(queue_t *qu, int y) {
     return -1;
 }
 
+int qpop(queue_t *qu) {
+    pthread_mutex_lock(&qu->mut);
+    int r = -1;
+    if (qu->root) {
+        r = qu->root->val.y;
+        node_t *t = qu->root;
+        qu->root = t->next;
+        free(t);
+    }
+    pthread_mutex_unlock(&qu->mut);
+    return r;
+}
+
 void qprint(queue_t *qu) {
 
     pthread_mutex_lock(&qu->mut);

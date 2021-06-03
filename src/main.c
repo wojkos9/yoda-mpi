@@ -16,8 +16,6 @@
 
 int HAS_SHM = 1;
 
-
-
 ST state;
 
 int size, rank, lamport, ack_count;
@@ -42,6 +40,10 @@ queue_t qu_x = QUEUE_INIT;
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
 
+int blocked = 0;
+int energy = 5;
+
+int dack_count = 0;
 
 void try_reserve_place() {
     if (ack_count == cown) {
@@ -64,6 +66,22 @@ void try_reserve_place() {
     }
 }
 
+void try_enter() {
+    if (ack_count >= cown - energy) {
+        if (!blocked) {
+            --energy;
+            state = ST_CRIT;
+            debug(9, "TO_CRIT");
+            pthread_mutex_unlock(&mut);
+
+            if (HAS_SHM) {
+                debug(9, "-------DEC--------");
+                shm_common->en += 1;
+            }
+        }
+    }
+}
+
 void comm_th() {
 
     MPI_Status status;
@@ -77,7 +95,7 @@ void comm_th() {
         lamport = MAX(lamport, pkt.ts) + 1;
         pthread_mutex_unlock(&lamut);
 
-        debug(20, "RECV %s from %d", mtyp_map[status.MPI_TAG], pkt.src);
+        debug(20, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 
         switch (status.MPI_TAG) {
             case PAR:
@@ -98,6 +116,9 @@ void comm_th() {
                         state = ST_IDLE;
                         pthread_mutex_unlock(&mut);
                     }
+                } else if (state == ST_PAIR) {
+                    ++ack_count;
+                    try_enter();
                 }
                 
                 break;
@@ -134,6 +155,26 @@ void comm_th() {
                 HAS_SHM = pkt.data;
                 pthread_mutex_unlock(&memlock);
                 break;
+            case DEC:
+                --energy;
+                psend(pkt.src, DACK);
+                break;
+            case DACK:
+                ++dack_count;
+                if (dack_count == cown - 1) {
+                    pthread_mutex_unlock(&mut);
+                }
+                break;
+            case END:
+                // if (styp == PT_Y) {
+                //     psend(pkt.src, END);
+                // }
+                pthread_mutex_unlock(&mut);
+                break;
+            case STA:
+                pair = pkt.src;
+                pthread_mutex_unlock(&mut);
+                break;
         }
     }
 }
@@ -151,7 +192,13 @@ void start_order() {
 }
 
 void start_enter_crit() {
+    ack_count = 0;
+    dack_count = 0;
 
+    pthread_mutex_lock(&lamut);
+    own_req.x = lamport;
+    psend_to_typ(styp, REQ, own_req.x);
+    pthread_mutex_unlock(&lamut);
 }
 
 void release_place() {
@@ -165,8 +212,13 @@ void* main_th(void *p) {
 
     if (HAS_SHM) {
         pthread_mutex_lock(&memlock);
-        init_shm();
-        shm_info_arr[rank].st = 1;
+        if (HAS_SHM) {
+            init_shm();
+            shm_info_arr[rank].st = 1;
+        }
+
+        debug(0, "HAS SHM: %d", HAS_SHM);
+        
     }
 
     while(state != ST_FIN) {
@@ -174,15 +226,43 @@ void* main_th(void *p) {
         pthread_mutex_lock(&mut);
         debug(10, "PAIR %d @ %d", pair, place);
 
-        if (HAS_SHM) {
-            shm_info_arr[rank].st += 1;
+        if (styp == PT_X) {
+            debug(15, "------START------");
+            start_enter_crit();
+            pthread_mutex_lock(&mut);
+            psend_to_typ(styp, DEC, 0);
+
+            psend(pair, STA);
+
+            int pid;
+            while ((pid = qpop(&qu_x)) != -1) {
+                psend(pid, ACK);
+                state = ST_LEAVE;
+            }
+            debug(15, "CRIT");
+
+            pthread_mutex_lock(&mut);
+            
+        } else {
+            pthread_mutex_lock(&mut);
         }
+
+        debug(15, "START %d", pair);
+
+        shm_info_arr[rank].st += 1;
+
+        usleep(rand() % 5 * 50000);
+
+        debug(15, "END %d", pair);
+
+        psend(pair, END);
+        pthread_mutex_lock(&mut);
 
         place = -1;
         pair = -1;
 
         usleep(50000);
-        if (rank == 0) printf("\n\n\n");
+        if (rank == 0 && DEBUG_LVL >= 9) printf("\n\n\n");
         usleep(50000);
 
         release_place();
@@ -214,6 +294,7 @@ void init(int *argc, char ***argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     srand(rank);
+    own_req.y = rank;
 }
 
 int main(int argc, char **argv)
@@ -222,19 +303,19 @@ int main(int argc, char **argv)
 
     DEBUG_LVL = 9;
 
-    if (argc > 1) {
-        DEBUG_LVL = atoi(argv[1]);
-    }
+    parse_args(argc, argv);
 
-    if (argc >= 4) {
-        cx = atoi(argv[1]);
-        cy = atoi(argv[2]);
-        cz = atoi(argv[3]);
-    } else {
-        cy = cx = size / 2;
-        // cx = size;
-        //cz = size - cx - cy;
-    }
+    // if (argc >= 4) {
+    //     cx = atoi(argv[1]);
+    //     cy = atoi(argv[2]);
+    //     cz = atoi(argv[3]);
+    // } else {
+    //     cy = cx = size / 2;
+    //     // cx = size;
+    //     //cz = size - cx - cy;
+    // }
+
+    cy = cx = size / 2;
 
     styp = rank < cx ? PT_X : (rank < cx+cy ? PT_Y : PT_Z);
     otyp = styp < PT_Z ? 1-styp : PT_X;
@@ -253,7 +334,6 @@ int main(int argc, char **argv)
     pthread_create(&th, NULL, main_th, NULL);
 
     ack_count = 0;
-    // start_order();
 
     comm_th();
 

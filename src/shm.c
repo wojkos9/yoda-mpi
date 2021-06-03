@@ -11,15 +11,20 @@
 
 #include "utils.h"
 
+#include "main.h"
+
 #define SHM_PATH "/yoda_shm"
 
+shm_common_t *shm_common;
 shm_info_t *shm_info_arr;
 
 pthread_mutex_t memlock = PTHREAD_MUTEX_INITIALIZER;
 
 void init_shm() {
 
-    int shm_size = sizeof(shm_info_t) * size;
+    HAS_SHM = 1;
+
+    int shm_size = sizeof(shm_common_t) + sizeof(shm_info_t) * size;
 
     if (rank != 0) {
         pthread_mutex_lock(&memlock);
@@ -36,12 +41,14 @@ void init_shm() {
         // if (fd < 0) goto shm_fail;
     }
 
-    shm_info_arr = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (shm_info_arr == MAP_FAILED) goto shm_fail;
+    shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (shm_common == MAP_FAILED) goto shm_fail;
 
     if (rank == 0) {
-        memset(shm_info_arr, 0, shm_size);
+        memset(shm_common, 0, shm_size);
     }
+
+    shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
 
     goto shm_succ;
 

@@ -29,5 +29,6 @@ int qputv(queue_t *qu, val_t v);
 int qdel(queue_t *qu);
 int qrm1(queue_t *qu, int y);
 void qprint(queue_t *qu);
+int qpop(queue_t *qu);
 
 #endif // __QUEUE_H__
