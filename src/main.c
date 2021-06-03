@@ -14,7 +14,7 @@
 
 #include "shm.h"
 
-int HAS_SHM = 1;
+int HAS_SHM = 0;
 
 ST state;
 
@@ -249,7 +249,10 @@ void* main_th(void *p) {
 
         debug(15, "START %d", pair);
 
-        shm_info_arr[rank].st += 1;
+        if (HAS_SHM) {
+            shm_info_arr[rank].st += 1;
+        }
+        
 
         usleep(rand() % 5 * 50000);
 
