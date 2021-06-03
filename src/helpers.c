@@ -1,12 +1,19 @@
 #include "state.h"
 #include "utils.h"
 
+#include <pthread.h>
+
+extern pthread_mutex_t lamut;
+
+
 int psend1(int dest, MTYP typ, int data) {
     packet_t pkt;
-    pkt.ts = ++lamport;
     pkt.src = rank;
     pkt.data = data;
+    // pthread_mutex_lock(&lamut);
+    pkt.ts = ++lamport;
     MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
+    // pthread_mutex_unlock(&lamut);
     debug(20, "SEND %d to %d", typ, dest);
 }
 

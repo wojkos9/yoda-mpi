@@ -40,10 +40,8 @@ void try_reserve_place() {
         if (DEBUG_LVL >= 9) {
             col(printf("RESERVING +%d: ", offset), qprint(&qu));
         }
-        pthread_mutex_lock(&lamut);
         place = qrm1(&qu, rank) + offset;
         ++offset;
-        pthread_mutex_unlock(&lamut);
         state = ST_WAIT;
         debug(9, "PLACE %d", place);
         psend_to_typ(otyp, ORD, place);
@@ -62,11 +60,13 @@ void comm_th() {
     MPI_Status status;
     packet_t pkt;
 
-    int i;
+    int ts, i;
 
     while (state != ST_FIN) {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        pthread_mutex_lock(&lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
+        pthread_mutex_unlock(&lamut);
 
         debug(20, "RECV %d from %d", status.MPI_TAG, pkt.src);
 
@@ -106,10 +106,8 @@ void comm_th() {
                 state = ST_FIN;
                 break;
             case REL:
-                pthread_mutex_lock(&lamut);
                 qrm1(&qu, pkt.src);
                 offset += 1;
-                pthread_mutex_unlock(&lamut);
                 psend(pkt.src, ACK);
                 break;
         }
@@ -120,7 +118,9 @@ void start_order() {
     ack_count = 0;
     state = ST_ORD;
     if (cown > 1) {
+        pthread_mutex_lock(&lamut);
         psend_to_typ_all(styp, PAR, lamport);
+        pthread_mutex_unlock(&lamut);
     } else {
         try_reserve_place();
     }
@@ -141,9 +141,9 @@ void* main_th(void *p) {
         debug(10, "PAIR %d @ %d", pair, place);
         place = -1;
         pair = -1;
-        usleep(500000);
+        usleep(50000);
         if (rank == 0) printf("\n\n\n");
-        usleep(500000);
+        usleep(50000);
 
         release_place();
         pthread_mutex_lock(&mut);
