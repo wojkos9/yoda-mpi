@@ -14,9 +14,10 @@ int psend1(int dest, MTYP typ, int data) {
     pkt.data = data;
     // pthread_mutex_lock(&lamut);
     pkt.ts = ++lamport;
+    debug(20, "SEND %s to %d", mtyp_map[typ], dest);
     MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
     // pthread_mutex_unlock(&lamut);
-    debug(20, "SEND %s to %d", mtyp_map[typ], dest);
+    
 }
 
 int psend(int dest, MTYP typ) {

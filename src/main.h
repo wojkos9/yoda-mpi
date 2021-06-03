@@ -60,5 +60,7 @@ int parse_args(int argc, char *argv[]);
 
 extern int energy;
 
+extern int COUNTS_OVR;
+
 
 #endif // __MAIN_H__

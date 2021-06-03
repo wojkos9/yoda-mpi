@@ -14,6 +14,8 @@
 
 #include "shm.h"
 
+int COUNTS_OVR = 0;
+
 int HAS_SHM = 0;
 
 ST state;
@@ -323,14 +325,20 @@ int main(int argc, char **argv)
     //     // cx = size;
     //     //cz = size - cx - cy;
     // }
+    if (!COUNTS_OVR) {
+        cy = cx = size / 2;
+    }
 
-    cy = cx = size / 2;
+    if (rank == 0) {
+        printf("ENERGY %d, %d-%d-%d\n", energy, cx, cy, cz);
+    }
+    
 
     styp = rank < cx ? PT_X : (rank < cx+cy ? PT_Y : PT_Z);
     otyp = styp < PT_Z ? 1-styp : PT_X;
     cown = *cnts[styp];
     copp = *cnts[otyp];
-    opp_base = styp == PT_X ? copp : 0;
+    opp_base = styp == PT_X ? cown : 0;
 
     places = malloc(sizeof(int) * copp);
 
