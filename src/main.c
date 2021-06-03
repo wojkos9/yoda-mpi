@@ -18,7 +18,7 @@ int HAS_SHM = 0;
 
 ST state;
 
-int size, rank, lamport, ack_count;
+int size, rank, lamport, ack_count = 0;
 PTYP styp, otyp;
 int pair = -1;
 
@@ -82,7 +82,7 @@ void try_enter() {
     }
 }
 
-void comm_th() {
+void comm_th_xy() {
 
     MPI_Status status;
     packet_t pkt;
@@ -207,7 +207,7 @@ void release_place() {
     psend_to_typ(styp, REL, 0);
 }
 
-void* main_th(void *p) {
+void* main_th_xy(void *p) {
     debug(20, "MAIN %d %d %d", rank, cown, copp)
 
     if (HAS_SHM) {
@@ -276,6 +276,12 @@ void* main_th(void *p) {
     return 0;
 }
 
+void *main_th_z(void *p) {
+
+    return 0;
+}
+
+
 void init(int *argc, char ***argv)
 {
     int provided;
@@ -334,11 +340,9 @@ int main(int argc, char **argv)
 
     pthread_t th;
 
-    pthread_create(&th, NULL, main_th, NULL);
+    pthread_create(&th, NULL, main_th_xy, NULL);
 
-    ack_count = 0;
-
-    comm_th();
+    comm_th_xy();
 
     pthread_join(th, NULL);
 
