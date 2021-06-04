@@ -4,6 +4,7 @@
 #define ADC(...) __VA_ARGS__ 
 #define EXPAND(x) ADC(x, )
 #define QUOTE_EXPAND(x) ADC(#x, )
+#define PREFIX_EXPAND(PREF, x) ADC(ST_##x, )
 
 #define MAC(x) EXPAND_FUN(x) MAC2
 #define MAC2(x) EXPAND_FUN(x) MAC

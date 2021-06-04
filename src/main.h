@@ -61,9 +61,9 @@ extern int sync_all_with_msg(MTYP mtyp, int data);
 
 int parse_args(int argc, char *argv[]);
 
-extern int energy;
-
 extern int COUNTS_OVR;
+
+extern int blocked;
 
 
 #endif // __MAIN_H__

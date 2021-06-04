@@ -19,7 +19,7 @@
 /* printf colored based on rank */
 #define colbeg printf("%c[%d;%dm [tid %d ts %d]: ", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport)
 #define colend printf("%c[%d;%dm\n", 27, 0, 37)
-#define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d st %d]: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, state, ##__VA_ARGS__, 27, 0, 37);
+#define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d st %d(%c) b %d]: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, state, state_map[state][0], blocked, ##__VA_ARGS__, 27, 0, 37);
 
 #define col(...) colbeg, __VA_ARGS__, colend
 

@@ -12,6 +12,7 @@
 #include "utils.h"
 
 #include "main.h"
+#include "state.h"
 
 #define SHM_PATH "/yoda_shm"
 
@@ -44,17 +45,26 @@ void init_shm() {
     shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (shm_common == MAP_FAILED) goto shm_fail;
 
-    if (rank == 0) {
-        memset(shm_common, 0, shm_size);
-    }
+    MEM_INIT = 1;
 
     shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
+
+    if (rank == 0) {
+        memset(shm_common, 0, shm_size);
+        shm_common->curr = energy;
+        for (int i = 0; i < size; i++) {
+            shm_info_arr[i].pad = '-';
+        }
+    }
+
+    
 
     goto shm_succ;
 
     shm_fail:
     debug(0, "SHM FAIL");
     HAS_SHM = 0;
+    MEM_INIT = 0;
     if (rank != 0) sync_all_with_msg(FIN, 0);
     shm_succ:
     if (rank == 0) sync_all_with_msg(MEM, HAS_SHM);
