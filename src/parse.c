@@ -22,7 +22,7 @@ int parse_args(int argc, char *argv[]) {
             case 'c':
                 cx = atoi(argv[optind-1]);
                 cy = atoi(argv[optind++]);
-                cz = 0;
+                cz = size - cx - cy;
                 COUNTS_OVR = 1;
                 break;
         }

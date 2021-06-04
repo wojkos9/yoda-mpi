@@ -18,7 +18,10 @@ extern MPI_Datatype PAK_T;
 (DEC) \
 (STA) \
 (END) \
-(DACK)
+(DACK) \
+(INC) \
+(WAKE) \
+(ZREQ)
 
 typedef enum {
 #define EXPAND_FUN EXPAND
