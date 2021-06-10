@@ -1,6 +1,6 @@
 # Yoda MPI
 
-Currently only X and Y process types (x = y = size/2).
+X, Y, Z process types. Z_count = size - X_count - Y_count
 
 ## Running:
-`$ ./run.sh [size] [-e energy] [-v verbosity level] [-s (use shared memory for debugging)]`
+`$ ./run.sh [size] [-c X_count Y_count] [-e energy] [-v verbosity level] [-s (use shared memory for debugging)]`
