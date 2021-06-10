@@ -14,7 +14,7 @@ typedef struct {
 
 typedef struct {
     char en;
-    char curr;
+    char curr_energy;
 } shm_common_t;
 
 #define SHM_INFO_INIT {0}

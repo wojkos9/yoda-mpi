@@ -51,7 +51,7 @@ void init_shm() {
 
     if (rank == 0) {
         memset(shm_common, 0, shm_size);
-        shm_common->curr = energy;
+        shm_common->curr_energy = energy;
         for (int i = 0; i < size; i++) {
             shm_info_arr[i].pad = '-';
         }

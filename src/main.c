@@ -130,6 +130,7 @@ void try_enter() { // X
     if (ack_count >= cown - energy) {
         if (!blocked) {
             --energy;
+            debug(5, "ENENENENENENNENENENEN %d\n", energy);
             change_state(ST_CRIT);
             debug(9, "TO_CRIT");
             pthread_mutex_unlock(&mut); // -> ST_CRIT
@@ -137,7 +138,10 @@ void try_enter() { // X
             if (MEM_INIT) {
                 debug(10, "-------DEC--------");
                 shm_common->en += 1;
-                shm_common->curr -= 1;
+                shm_common->curr_energy -= 1;
+            }
+            if (cown == 1 && !energy) {
+                messenger = 1;
             }
         }
     }
@@ -255,7 +259,7 @@ void comm_th_xy() {
                 break;
             case INC:
                 ++energy;
-                if (energy == cz && blocked) {
+                if (energy == cz) {
                     blocked = 0;
                     debug(10, "UNLOCK");
                     try_enter();
@@ -278,14 +282,16 @@ void comm_th_z() {
 
         switch (status.MPI_TAG) {
             case WAKE:
-                change_state(ST_AWAIT);
-                pthread_mutex_unlock(&mut);
+                if (state == ST_SLEEP) {
+                    change_state(ST_AWAIT);
+                    pthread_mutex_unlock(&mut);
+                }
                 break;
             case ACK:
                 inc_ack();
-                if (ack_count == cx) {
+                if (ack_count == cx && state) {
                     change_state(ST_ZCRIT);
-                    pthread_mutex_unlock(&mut);
+                    pthread_mutex_unlock(&start_mut);
                 }
                 break;
             case MEM:
@@ -300,12 +306,14 @@ void *main_th_z(void *p) {
 
     try_init_shm();
 
+    pthread_mutex_lock(&start_mut);
+
     while (state != ST_FIN) {
         pthread_mutex_lock(&mut);
         zero_ack();
         psend_to_typ_all(PT_X, ZREQ, 0);
 
-        pthread_mutex_lock(&mut);
+        pthread_mutex_lock(&start_mut);
 
         if (MEM_INIT) {
             shm_info_arr[rank].st += 1;
@@ -314,8 +322,9 @@ void *main_th_z(void *p) {
         usleep(rand() % 10 * 100000);
 
         if (MEM_INIT) {
-            shm_common->curr += 1;
+            shm_common->curr_energy += 1;
         }
+        debug(15, "+++++++++INC++++++++++");
         psend_to_typ_all(PT_X, INC, 0);
         change_state(ST_SLEEP);
     }
@@ -337,7 +346,7 @@ void start_order() {
 void start_enter_crit() {
     if (cown == 1) {
         dack_count = 1;
-        pthread_mutex_unlock(&mut);
+        try_enter();
         pthread_mutex_unlock(&can_leave);
         return;
     }
@@ -351,7 +360,12 @@ void start_enter_crit() {
 
 void release_place() {
     zero_ack();
-    psend_to_typ(styp, REL, 0);
+    if (cown == 1) {
+        pthread_mutex_unlock(&can_leave);
+    } else {
+        psend_to_typ(styp, REL, 0);
+    }
+    
 }
 
 void* main_th_xy(void *p) {
@@ -409,7 +423,7 @@ void* main_th_xy(void *p) {
 
         if (messenger) {
             messenger = 0;
-            debug(10, "WAKING");
+            debug(10, "\t\t\t*WAKING");
             psend_to_typ_all(PT_Z, WAKE, 0);
         }
 
