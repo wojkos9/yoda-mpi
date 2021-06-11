@@ -21,6 +21,15 @@ shm_info_t *shm_info_arr;
 
 pthread_mutex_t memlock = PTHREAD_MUTEX_INITIALIZER;
 
+void init_sh_mutex(pthread_mutex_t *mut, int lock) {
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(mut, &attr);
+    if (lock) pthread_mutex_lock(mut);
+}
+
 void init_shm() {
 
     HAS_SHM = 1;
@@ -45,6 +54,8 @@ void init_shm() {
     shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (shm_common == MAP_FAILED) goto shm_fail;
 
+    
+
     MEM_INIT = 1;
 
     shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
@@ -57,7 +68,8 @@ void init_shm() {
         }
     }
 
-    
+    init_sh_mutex(&shm_common->mut, 0);
+    msync(&shm_common, shm_size, MS_SYNC);
 
     goto shm_succ;
 

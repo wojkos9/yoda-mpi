@@ -1,13 +1,13 @@
 #ifndef __SHM_H__
 #define __SHM_H__
 
-#include "pthread.h"
+#include <pthread.h>
 
 extern void init_shm();
 
 typedef struct {
-    char st;
     char ch;
+    char pair;
     char pad;
     char ack;
 } shm_info_t;
@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
     char en;
     char curr_energy;
+    pthread_mutex_t mut;
 } shm_common_t;
 
 #define SHM_INFO_INIT {0}

@@ -64,6 +64,7 @@ int parse_args(int argc, char *argv[]);
 extern int COUNTS_OVR;
 
 extern int blocked;
+extern int base_time;
 
 
 #endif // __MAIN_H__

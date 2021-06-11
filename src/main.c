@@ -14,6 +14,15 @@
 
 #include "shm.h"
 
+int base_time = 100000;
+
+void random_sleep2(int min, int max) {
+    usleep((min + rand() % (max-min)) * base_time);
+}
+void random_sleep(int max) {
+    usleep(rand() % max * base_time);
+}
+
 int COUNTS_OVR = 0;
 
 int HAS_SHM = 1;
@@ -31,7 +40,7 @@ MPI_Datatype PAK_T;
 
 int cx, cy, cz, copp, cown, opp_base;
 int offset;
-int place = 0, last_place = -1;
+int place = 0;
 
 val_t own_req;
 
@@ -43,6 +52,7 @@ queue_t qu_z = QUEUE_INIT;
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t start_mut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t pair_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t can_leave = PTHREAD_MUTEX_INITIALIZER;
 
@@ -72,14 +82,18 @@ void release_z() {
 void inc_ack() {
     ++ack_count;
     if (MEM_INIT) {
+        pthread_mutex_lock(&shm_common->mut);
         shm_info_arr[rank].ack = ack_count;
+        pthread_mutex_unlock(&shm_common->mut);
     }
 }
 
 void zero_ack() {
     ack_count = 0;
     if (MEM_INIT) {
+        pthread_mutex_lock(&shm_common->mut);
         shm_info_arr[rank].ack = 0;
+        pthread_mutex_unlock(&shm_common->mut);
     }
 }
 
@@ -88,7 +102,6 @@ void try_init_shm() {
         pthread_mutex_lock(&memlock);
         if (HAS_SHM) {
             init_shm();
-            shm_info_arr[rank].st = 1;
         }
 
         debug(0, "HAS SHM: %d", HAS_SHM);
@@ -100,9 +113,20 @@ void try_init_shm() {
 void change_state(ST new) {
     state = new;
     if (MEM_INIT) {
+        pthread_mutex_lock(&shm_common->mut);
         shm_info_arr[rank].ch = state_map[state][0];
+        pthread_mutex_unlock(&shm_common->mut);
     }
     debug(15, "\t\t\t\t\t-> STATE %s", state_map[new]);
+}
+
+void set_pair(int new) {
+    pair = new;
+    if (MEM_INIT) {
+        pthread_mutex_lock(&shm_common->mut);
+        shm_info_arr[rank].pair = '0' + pair;
+        pthread_mutex_unlock(&shm_common->mut);
+    }
 }
 
 void try_reserve_place() {
@@ -118,9 +142,8 @@ void try_reserve_place() {
         psend_to_typ(otyp, ORD, place);
         for(int i = 0; i < copp; i++) {
             if (places[i] == place) {
-                pair = i + opp_base;
-                change_state(ST_PAIR);
-                pthread_mutex_unlock(&mut); // -> ST_PAIR
+                set_pair(i + opp_base);
+                pthread_mutex_unlock(&pair_mut); // -> ST_PAIR
             }
         }
     }
@@ -131,14 +154,15 @@ void try_enter() { // X
         if (!blocked) {
             --energy;
             debug(5, "ENENENENENENNENENENEN %d\n", energy);
-            change_state(ST_CRIT);
             debug(9, "TO_CRIT");
             pthread_mutex_unlock(&mut); // -> ST_CRIT
 
             if (MEM_INIT) {
                 debug(10, "-------DEC--------");
+                pthread_mutex_lock(&shm_common->mut);
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
+                pthread_mutex_unlock(&shm_common->mut);
             }
             if (cown == 1 && !energy) {
                 messenger = 1;
@@ -186,7 +210,7 @@ void comm_th_xy() {
                 }
                 
                 break;
-            case REQ:
+            case REQ: // X
                 if (state != ST_PAIR) {
                     psend(pkt.src, ACK);
                 } else {
@@ -211,25 +235,24 @@ void comm_th_xy() {
                 i = pkt.src - opp_base;
                 places[i] = pkt.data;
                 if (state == ST_AWAIT && pkt.data == place) {
-                    pair = pkt.src;
-                    change_state(ST_PAIR);
-                    pthread_mutex_unlock(&mut); // -> ST_PAIR
+                    set_pair(pkt.src);
+                    pthread_mutex_unlock(&pair_mut); // -> ST_PAIR
                 }
                 break;
-            case FIN:
+            case FIN: // never used unless internal fail
                 debug(0, "FIN");
                 change_state(ST_FIN);
                 break;
-            case REL:
+            case REL: // Y
                 qrm1(&qu, pkt.src);
                 offset += 1;
                 psend(pkt.src, ACK);
                 break;
-            case MEM:
+            case MEM: // shm
                 HAS_SHM = pkt.data;
                 pthread_mutex_unlock(&memlock);
                 break;
-            case DEC:
+            case DEC: // X
                 --energy;
                 qrm1(&qu, pkt.src);
                 offset += 1;
@@ -239,7 +262,7 @@ void comm_th_xy() {
                     // release_z();
                 }
                 break;
-            case DACK:
+            case DACK: // X
                 ++dack_count;
                 if (dack_count == cown - 1) {
                     if (!energy) {
@@ -249,15 +272,13 @@ void comm_th_xy() {
                 }
                 break;
             case END:
-                change_state(ST_LEAVE);
                 pthread_mutex_unlock(&mut); // -> ST_LEAVE
                 break;
             case STA: // Y
-                pair = pkt.src;
-                change_state(ST_CRIT);
+                set_pair(pkt.src);
                 pthread_mutex_unlock(&start_mut); // Y -> ST_CRIT
                 break;
-            case INC:
+            case INC: // X
                 ++energy;
                 if (energy == cz) {
                     blocked = 0;
@@ -283,14 +304,12 @@ void comm_th_z() {
         switch (status.MPI_TAG) {
             case WAKE:
                 if (state == ST_SLEEP) {
-                    change_state(ST_AWAIT);
                     pthread_mutex_unlock(&mut);
                 }
                 break;
             case ACK:
                 inc_ack();
-                if (ack_count == cx && state) {
-                    change_state(ST_ZCRIT);
+                if (ack_count == cx && state == ST_AWAIT) {
                     pthread_mutex_unlock(&start_mut);
                 }
                 break;
@@ -310,19 +329,20 @@ void *main_th_z(void *p) {
 
     while (state != ST_FIN) {
         pthread_mutex_lock(&mut);
+        change_state(ST_AWAIT);
+
         zero_ack();
         psend_to_typ_all(PT_X, ZREQ, 0);
 
         pthread_mutex_lock(&start_mut);
+        change_state(ST_ZCRIT);
+
+        random_sleep(10);
 
         if (MEM_INIT) {
-            shm_info_arr[rank].st += 1;
-        }
-
-        usleep(rand() % 10 * 100000);
-
-        if (MEM_INIT) {
+            pthread_mutex_lock(&shm_common->mut);
             shm_common->curr_energy += 1;
+            pthread_mutex_unlock(&shm_common->mut);
         }
         debug(15, "+++++++++INC++++++++++");
         psend_to_typ_all(PT_X, INC, 0);
@@ -375,16 +395,19 @@ void* main_th_xy(void *p) {
 
     pthread_mutex_lock(&can_leave);
     pthread_mutex_lock(&start_mut);
+    pthread_mutex_lock(&pair_mut);
 
     while(state != ST_FIN) {
         start_order();
-        pthread_mutex_lock(&mut);
+        pthread_mutex_lock(&pair_mut);
+        change_state(ST_PAIR);
         debug(10, "PAIR %d @ %d", pair, place);
 
         if (styp == PT_X) {
             debug(15, "------TRY ENTER------");
             start_enter_crit(); // ST_PAIR
             pthread_mutex_lock(&mut);
+            change_state(ST_CRIT);
             psend_to_typ(styp, DEC, 0); // ST_CRIT
             
             debug(15, "CRIT");
@@ -393,35 +416,28 @@ void* main_th_xy(void *p) {
             while ((pid = qpop(&qu_x)) != -1) {
                 psend(pid, ACK);
             }
-            change_state(ST_WORK);
+            
             psend(pair, STA); // send START to Y
             
         } else {
             pthread_mutex_lock(&start_mut); // Y wait for START
-            change_state(ST_WORK);
             release_place();
             
         }
 
-        
+        change_state(ST_WORK);
 
         debug(15, "START %d", pair);
 
-        if (MEM_INIT) {
-            shm_info_arr[rank].st += 1;
-        }
-        
-
-        usleep(rand() % 5 * 50000);
-
-        // usleep(5 * 1000000);
+        random_sleep(10);
 
         debug(15, "END %d", pair);
 
         psend(pair, END);
         pthread_mutex_lock(&mut); // wait for END
+        change_state(ST_LEAVE);
 
-        if (messenger) {
+        if (messenger) { // co jak nie dostal DACK ?
             messenger = 0;
             debug(10, "\t\t\t*WAKING");
             psend_to_typ_all(PT_Z, WAKE, 0);
@@ -430,13 +446,7 @@ void* main_th_xy(void *p) {
         
 
         place = -1;
-        pair = -1;
-
-        usleep(50000);
-        if (rank == 0 && DEBUG_LVL >= 9) printf("\n\n\n");
-        usleep(50000);
-
-        change_state(ST_LEAVE);
+        set_pair(-1);
 
         if (styp == PT_X) {
             release_z();
@@ -445,7 +455,6 @@ void* main_th_xy(void *p) {
         
         
         pthread_mutex_lock(&can_leave);
-        change_state(ST_IDLE);
 
         
     }
@@ -486,6 +495,8 @@ int main(int argc, char **argv)
 
     DEBUG_LVL = 9;
 
+    base_time = 100000;
+
     parse_args(argc, argv);
 
     // if (argc >= 4) {
@@ -505,17 +516,21 @@ int main(int argc, char **argv)
         printf("ENERGY %d, %d-%d-%d\n", energy, cx, cy, cz);
     }
     
-
+    // 0, 1, ... cx-1 -> X
+    // cx, cx+1, ..., cx+cy-1 -> Y
+    // cx+cy.. size -> Z
     styp = rank < cx ? PT_X : (rank < cx+cy ? PT_Y : PT_Z);
     otyp = styp < PT_Z ? 1-styp : PT_X;
     cown = *cnts[styp];
     copp = *cnts[otyp];
     opp_base = styp == PT_X ? cown : 0;
 
+    // places received from opposite process type
     places = malloc(sizeof(int) * copp);
 
     debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
 
+    // by default wait for unlock
     pthread_mutex_lock(&mut);
 
     pthread_t th;
