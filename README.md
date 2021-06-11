@@ -1,6 +1,6 @@
 # Yoda MPI
 
-X, Y, Z process types. Z_count = size - X_count - Y_count
+X, Y, Z process types.
 
 ## Running:
-`$ ./run.sh [size] [-c X_count Y_count] [-e energy] [-v verbosity level] [-s (use shared memory for debugging)]`
+`$ ./run.sh -c cx cy cz [-e energy] [-v verbosity level] [-s (use shared memory for debugging)] [-t time_mul (more = longer sleeps)]`
