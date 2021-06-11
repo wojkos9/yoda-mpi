@@ -1,3 +1,4 @@
+#include "state.h"
 #include "main.h"
 #include "utils.h"
 #include "shm.h"

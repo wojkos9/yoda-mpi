@@ -2,44 +2,15 @@
 #define __MAIN_H__
 
 #include <mpi.h>
+#include <pthread.h>
 
-#include "macro_expand.h"
+#include "queue.h"
+#include "state.h"
+
+#include "types.h"
 
 extern MPI_Datatype PAK_T;
 
-#define PKT_TYPES \
-(REQ) \
-(ACK) \
-(PAR) \
-(ORD) \
-(FIN) \
-(REL) \
-(MEM) \
-(DEC) \
-(STA) \
-(END) \
-(DACK) \
-(INC) \
-(WAKE) \
-(ZREQ)
-
-typedef enum {
-#define EXPAND_FUN EXPAND
-    FUN_APPLY(PKT_TYPES)
-#undef EXPAND_FUN
-} MTYP;
-
-#define mkmtyp(t) #t
-
-static char *mtyp_map[] = {
-#define EXPAND_FUN QUOTE_EXPAND
-    FUN_APPLY(PKT_TYPES)
-#undef EXPAND_FUN
-};
-
-typedef enum {
-    PT_X, PT_Y, PT_Z
-} PTYP;
 
 extern int cx, cy, cz, copp;
 
@@ -65,6 +36,21 @@ extern int COUNTS_OVR;
 
 extern int blocked;
 extern int base_time;
+extern int cx, cy, cz, copp, cown, opp_base, offset;
+
+extern pthread_mutex_t mut,
+start_mut,
+pair_mut,
+lamut,
+can_leave;
+
+extern int *places;
+extern queue_t qu, qu_x, qu_z;
+
+extern void comm_th_xy();
+extern void comm_th_z();
+
+
 
 
 #endif // __MAIN_H__
