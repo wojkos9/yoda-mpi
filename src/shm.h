@@ -8,10 +8,14 @@ extern void init_shm();
 typedef struct {
     char ch;
     char pair;
-    char pad;
+    char en;
     char ack;
     char msg;
-    char pad2[16-5];
+    char pad2[3];
+    char x;
+    char pad3[3];
+    char y;
+    char pad4[3];
 } shm_info_t;
 
 typedef struct {
@@ -28,8 +32,14 @@ extern int HAS_SHM, MEM_INIT;
 
 extern pthread_mutex_t memlock;
 
-#define SHM_SAFE(op) pthread_mutex_lock(&shm_common->mut); \
+// #define SHM_SAFE(op) if (MEM_INIT) {\
+//             pthread_mutex_lock(&shm_common->mut); \
+//             op \
+//             pthread_mutex_unlock(&shm_common->mut); \
+//             }
+
+#define SHM_SAFE(op) if (MEM_INIT) {\
             op \
-            pthread_mutex_unlock(&shm_common->mut);
+            }
 
 #endif // __SHM_H__

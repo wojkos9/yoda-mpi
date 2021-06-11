@@ -88,6 +88,9 @@ void comm_th_xy() {
                 break;
             case DEC: // X
                 --energy;
+                SHM_SAFE(
+                    shm_info_arr[rank].en = energy;
+                )
                 qrm1(&qu, pkt.src);
                 offset += 1;
                 psend(pkt.src, DACK);
@@ -117,6 +120,9 @@ void comm_th_xy() {
                 break;
             case INC: // X
                 ++energy;
+                SHM_SAFE(
+                    shm_info_arr[rank].en = energy;
+                )
                 if (energy == cz) {
                     blocked = 0;
                     debug(10, "UNLOCK");

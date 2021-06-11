@@ -16,6 +16,8 @@
 
 int base_time = 100000;
 
+int enter_count = 0;
+
 void random_sleep2(int min, int max) {
     usleep((min + rand() % (max-min)) * base_time);
 }
@@ -81,20 +83,20 @@ void release_z() {
 
 void inc_ack() {
     ++ack_count;
-    if (MEM_INIT) {
-        SHM_SAFE(
-            shm_info_arr[rank].ack = ack_count;
-        )
-    }
+    
+    SHM_SAFE(
+        // shm_info_arr[rank].ack = ack_count;
+        sprintf(shm_info_arr[rank].pad3, "%d", ack_count);
+    )
 }
 
 void zero_ack() {
     ack_count = 0;
-    if (MEM_INIT) {
-        SHM_SAFE(
-            shm_info_arr[rank].ack = 0;
-        )
-    }
+    
+    SHM_SAFE(
+        // shm_info_arr[rank].ack = 0;
+        sprintf(shm_info_arr[rank].pad3, "%d", ack_count);
+    )
 }
 
 void try_init_shm() {
@@ -110,23 +112,26 @@ void try_init_shm() {
 
 }
 
+void set_place(int newplace) {
+    place = newplace;
+    SHM_SAFE(
+        sprintf(shm_info_arr[rank].pad4, "%d", place);
+    )
+}
+
 void change_state(ST new) {
     state = new;
-    if (MEM_INIT) {
-        SHM_SAFE(
-            shm_info_arr[rank].ch = state_map[state][0];
-        )
-    }
+    SHM_SAFE(
+        shm_info_arr[rank].ch = state_map[state][0];
+    )
     debug(15, "\t\t\t\t\t-> STATE %s", state_map[new]);
 }
 
 void set_pair(int new) {
     pair = new;
-    if (MEM_INIT) {
-        SHM_SAFE(
-            shm_info_arr[rank].pair = '0' + pair;
-        )
-    }
+    SHM_SAFE(
+        shm_info_arr[rank].pair = '0' + pair;
+    )
 }
 
 void try_reserve_place() {
@@ -135,7 +140,7 @@ void try_reserve_place() {
         if (DEBUG_LVL >= 9) {
             col(printf("RESERVING +%d: ", offset), qprint(&qu));
         }
-        place = qrm1(&qu, rank) + offset;
+        set_place(qrm1(&qu, rank) + offset);
         ++offset;
         change_state(ST_AWAIT);
         debug(9, "PLACE %d", place);
@@ -149,6 +154,13 @@ void try_reserve_place() {
     }
 }
 
+void notify_enter() {
+    ++enter_count;
+    SHM_SAFE(
+        sprintf(shm_info_arr[rank].pad2, "%d", enter_count);
+    )
+}
+
 void try_enter() { // X
     if (ack_count >= cown - energy) {
         if (!blocked) {
@@ -157,45 +169,16 @@ void try_enter() { // X
             debug(9, "TO_CRIT");
             pthread_mutex_unlock(&mut); // -> ST_CRIT
 
-            if (MEM_INIT) {
-                debug(10, "-------DEC--------");
-                SHM_SAFE(
+            debug(10, "-------DEC--------");
+            SHM_SAFE(
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
-                )
-            }
-        }
-    }
-}
-
-void *main_th_z(void *p) {
-
-    try_init_shm();
-
-    pthread_mutex_lock(&start_mut);
-
-    while (state != ST_FIN) {
-        pthread_mutex_lock(&mut);
-        change_state(ST_AWAIT);
-
-        zero_ack();
-        psend_to_typ_all(PT_X, ZREQ, 0);
-
-        pthread_mutex_lock(&start_mut);
-        change_state(ST_ZCRIT);
-
-        random_sleep(10);
-
-        if (MEM_INIT) {
-            SHM_SAFE(
-                shm_common->curr_energy += 1;
+                shm_info_arr[rank].en = energy;
             )
+            
+
         }
-        debug(15, "+++++++++INC++++++++++");
-        psend_to_typ_all(PT_X, INC, 0);
-        change_state(ST_SLEEP);
     }
-    return 0;
 }
 
 void start_order() {
@@ -226,7 +209,6 @@ void start_enter_crit() {
 }
 
 void release_place() {
-    zero_ack();
     if (cown == 1) {
         pthread_mutex_unlock(&can_leave);
     } else {
@@ -275,6 +257,8 @@ void* main_th_xy(void *p) {
             
         }
 
+        notify_enter();
+
         change_state(ST_WORK);
 
         debug(15, "START %d", pair);
@@ -296,7 +280,7 @@ void* main_th_xy(void *p) {
 
         
 
-        place = -1;
+        set_place(-1);
         set_pair(-1);
 
         if (styp == PT_X) {
@@ -313,7 +297,37 @@ void* main_th_xy(void *p) {
     return 0;
 }
 
+void *main_th_z(void *p) {
 
+    try_init_shm();
+
+    pthread_mutex_lock(&start_mut);
+
+    while (state != ST_FIN) {
+        pthread_mutex_lock(&mut);
+        change_state(ST_AWAIT);
+
+        zero_ack();
+        psend_to_typ_all(PT_X, ZREQ, 0);
+
+        pthread_mutex_lock(&start_mut);
+        change_state(ST_ZCRIT);
+
+        notify_enter();
+
+        random_sleep(10);
+
+        
+        SHM_SAFE(
+            shm_common->curr_energy += 1;
+        )
+
+        debug(15, "+++++++++INC++++++++++");
+        psend_to_typ_all(PT_X, INC, 0);
+        change_state(ST_SLEEP);
+    }
+    return 0;
+}
 
 
 void init(int *argc, char ***argv)
