@@ -8,7 +8,9 @@
 int parse_args(int argc, char *argv[]) {
     char c;
 
-    while ((c = getopt(argc, argv, "e:v:sc:")) != -1) {
+    energy = -1;
+
+    while ((c = getopt(argc, argv, "e:v:sc:t:")) != -1) {
         switch(c) {
             case 'e':
                 energy = atoi(optarg);
@@ -21,10 +23,19 @@ int parse_args(int argc, char *argv[]) {
                 break;
             case 'c':
                 cx = atoi(argv[optind-1]);
-                cy = atoi(argv[optind++]);
-                cz = size - cx - cy;
+                cy = atoi(argv[optind]);
+                cz = atoi(argv[optind+1]);
+                optind += 2;
                 COUNTS_OVR = 1;
+                break;
+            case 't':
+                base_time = atof(optarg) * base_time;
                 break;
         }
     }
+
+    if (energy < 0) {
+        energy = cz;
+    }
+
 }
