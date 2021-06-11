@@ -10,6 +10,8 @@ typedef struct {
     char pair;
     char pad;
     char ack;
+    char msg;
+    char pad2[16-5];
 } shm_info_t;
 
 typedef struct {
@@ -25,5 +27,9 @@ extern shm_common_t *shm_common;
 extern int HAS_SHM, MEM_INIT;
 
 extern pthread_mutex_t memlock;
+
+#define SHM_SAFE(op) pthread_mutex_lock(&shm_common->mut); \
+            op \
+            pthread_mutex_unlock(&shm_common->mut);
 
 #endif // __SHM_H__

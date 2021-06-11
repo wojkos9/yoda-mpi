@@ -82,18 +82,18 @@ void release_z() {
 void inc_ack() {
     ++ack_count;
     if (MEM_INIT) {
-        pthread_mutex_lock(&shm_common->mut);
-        shm_info_arr[rank].ack = ack_count;
-        pthread_mutex_unlock(&shm_common->mut);
+        SHM_SAFE(
+            shm_info_arr[rank].ack = ack_count;
+        )
     }
 }
 
 void zero_ack() {
     ack_count = 0;
     if (MEM_INIT) {
-        pthread_mutex_lock(&shm_common->mut);
-        shm_info_arr[rank].ack = 0;
-        pthread_mutex_unlock(&shm_common->mut);
+        SHM_SAFE(
+            shm_info_arr[rank].ack = 0;
+        )
     }
 }
 
@@ -113,9 +113,9 @@ void try_init_shm() {
 void change_state(ST new) {
     state = new;
     if (MEM_INIT) {
-        pthread_mutex_lock(&shm_common->mut);
-        shm_info_arr[rank].ch = state_map[state][0];
-        pthread_mutex_unlock(&shm_common->mut);
+        SHM_SAFE(
+            shm_info_arr[rank].ch = state_map[state][0];
+        )
     }
     debug(15, "\t\t\t\t\t-> STATE %s", state_map[new]);
 }
@@ -123,9 +123,9 @@ void change_state(ST new) {
 void set_pair(int new) {
     pair = new;
     if (MEM_INIT) {
-        pthread_mutex_lock(&shm_common->mut);
-        shm_info_arr[rank].pair = '0' + pair;
-        pthread_mutex_unlock(&shm_common->mut);
+        SHM_SAFE(
+            shm_info_arr[rank].pair = '0' + pair;
+        )
     }
 }
 
@@ -159,13 +159,10 @@ void try_enter() { // X
 
             if (MEM_INIT) {
                 debug(10, "-------DEC--------");
-                pthread_mutex_lock(&shm_common->mut);
+                SHM_SAFE(
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
-                pthread_mutex_unlock(&shm_common->mut);
-            }
-            if (cown == 1 && !energy) {
-                messenger = 1;
+                )
             }
         }
     }
@@ -267,6 +264,9 @@ void comm_th_xy() {
                 if (dack_count == cown - 1) {
                     if (!energy) {
                         messenger = 1;
+                        SHM_SAFE(
+                            shm_info_arr[rank].msg = '!';
+                        )
                     }
                     pthread_mutex_unlock(&can_leave); // X -> ST_IDLE
                 }
@@ -340,9 +340,9 @@ void *main_th_z(void *p) {
         random_sleep(10);
 
         if (MEM_INIT) {
-            pthread_mutex_lock(&shm_common->mut);
-            shm_common->curr_energy += 1;
-            pthread_mutex_unlock(&shm_common->mut);
+            SHM_SAFE(
+                shm_common->curr_energy += 1;
+            )
         }
         debug(15, "+++++++++INC++++++++++");
         psend_to_typ_all(PT_X, INC, 0);
@@ -404,6 +404,9 @@ void* main_th_xy(void *p) {
         debug(10, "PAIR %d @ %d", pair, place);
 
         if (styp == PT_X) {
+            SHM_SAFE(
+                shm_info_arr[rank].msg = 0;
+            )
             debug(15, "------TRY ENTER------");
             start_enter_crit(); // ST_PAIR
             pthread_mutex_lock(&mut);
@@ -439,6 +442,7 @@ void* main_th_xy(void *p) {
 
         if (messenger) { // co jak nie dostal DACK ?
             messenger = 0;
+            
             debug(10, "\t\t\t*WAKING");
             psend_to_typ_all(PT_Z, WAKE, 0);
         }
