@@ -10,15 +10,20 @@ void comm_th_xy() {
     MPI_Status status;
     packet_t pkt;
 
-    int ts, i;
+    int ts, i, err;
 
     int fin = 0;
 
     while (state != ST_FIN && !fin) {
-        MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        err = MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         // pthread_mutex_lock(&lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
         // pthread_mutex_unlock(&lamut);
+
+        if (err != MPI_SUCCESS) {
+            debug(0, "RECV ERROR %d", err);
+            break;
+        }
 
         debug(20, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 

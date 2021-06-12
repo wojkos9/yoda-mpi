@@ -27,7 +27,7 @@ void random_sleep(int max) {
 
 int COUNTS_OVR = 0;
 
-int HAS_SHM = 1;
+int HAS_SHM = 0;
 int MEM_INIT = 0;
 
 ST state;
@@ -103,7 +103,7 @@ void inc_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = ack_count;
-        sprintf(shm_info_arr[rank].pad3, "%d", ack_count);
+        sprintf(shm_info_arr[rank].pad3, "%d", ack_count % 1000);
     )
 }
 
@@ -112,7 +112,7 @@ void zero_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = 0;
-        sprintf(shm_info_arr[rank].pad3, "%d", ack_count);
+        sprintf(shm_info_arr[rank].pad3, "%d", ack_count  % 1000);
     )
 }
 
@@ -133,7 +133,7 @@ void try_init_shm() {
 void set_place(int newplace) {
     place = newplace;
     SHM_SAFE(
-        sprintf(shm_info_arr[rank].pad4, "%d", place);
+        sprintf(shm_info_arr[rank].pad4, "%d", place % 1000);
     )
 }
 
@@ -175,7 +175,7 @@ void try_reserve_place() {
 void notify_enter() {
     ++enter_count;
     SHM_SAFE(
-        sprintf(shm_info_arr[rank].pad2, "%d", enter_count);
+        sprintf(shm_info_arr[rank].pad2, "%d", enter_count % 1000);
     )
 }
 
@@ -184,17 +184,23 @@ void try_enter() { // X
         if (!blocked) {
             --energy;
             debug(9, "TO_CRIT");
+            change_state(ST_CRIT);
             pthread_mutex_unlock(&mut); // -> ST_CRIT
 
             debug(1, "-------DEC--------");
-            
+
+            int err = 0;
             SHM_SAFE2(
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
+                if (shm_common->curr_energy  < 0) {
+                    err = 1;
+                }
             )
-            if (shm_common->curr_energy  < 0) {
+            if (err) {
                 sync_all_with_msg(FIN, 0);
             }
+            
 
             SHM_SAFE(
                 shm_info_arr[rank].en = energy;
@@ -220,7 +226,7 @@ void start_order() {
     }
 }
 
-void start_enter_crit() {
+void start_enter_crit() { // X
     dack_count = 0;
 
     // pthread_mutex_lock(&lamut);
@@ -234,7 +240,7 @@ void start_enter_crit() {
     }
 }
 
-void release_place() {
+void release_place() { // Y
     if (cown == 1) {
         pthread_mutex_unlock(&can_leave);
     } else {
