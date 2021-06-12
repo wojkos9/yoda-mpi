@@ -1,0 +1,201 @@
+ [tid 2 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: Hello 9 7 3 2 2 X -> Y
+ [tid 0 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: Hello 9 7 3 2 2 X -> Y
+ [tid 1 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: Hello 9 7 3 2 2 X -> Y
+ [tid 2 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: MAIN 2 3 2
+ [tid 0 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: MAIN 0 3 2
+ [tid 0 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: TRUNC FILE
+ [tid 1 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: MAIN 1 3 2
+ [tid 0 ts 0 st 0(I) b 0 ok 0 E 2 a 0 o 0]: BCAST MEM 1
+ [tid 0 ts 1 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV MEM/1 from 0
+ [tid 0 ts 1 st 0(I) b 0 ok 0 E 2 a 0 o 0]: HAS SHM: 1
+ [tid 0 ts 1 st 0(I) b 0 ok 0 E 2 a 0 o 0]: BCAST SHM_OK 0
+ [tid 0 ts 2 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV SHM_OK/0 from 0
+ [tid 0 ts 3 st 0(I) b 0 ok 1 E 2 a 0 o 0]: RECV SHM_OK/0 from 2
+ [tid 0 ts 4 st 0(I) b 0 ok 2 E 2 a 0 o 0]: RECV SHM_OK/0 from 1
+ [tid 0 ts 5 st 0(I) b 0 ok 3 E 2 a 0 o 0]: RECV SHM_OK/0 from 6
+ [tid 2 ts 1 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV MEM/1 from 0
+ [tid 2 ts 2 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV SHM_OK/0 from 0
+ [tid 2 ts 2 st 0(I) b 0 ok 1 E 2 a 0 o 0]: HAS SHM: 1
+ [tid 2 ts 2 st 0(I) b 0 ok 1 E 2 a 0 o 0]: BCAST SHM_OK 0
+ [tid 2 ts 3 st 0(I) b 0 ok 1 E 2 a 0 o 0]: RECV SHM_OK/0 from 2
+ [tid 1 ts 1 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV MEM/1 from 0
+ [tid 1 ts 2 st 0(I) b 0 ok 0 E 2 a 0 o 0]: RECV SHM_OK/0 from 0
+ [tid 1 ts 2 st 0(I) b 0 ok 1 E 2 a 0 o 0]: HAS SHM: 1
+ [tid 1 ts 2 st 0(I) b 0 ok 1 E 2 a 0 o 0]: BCAST SHM_OK 0
+ [tid 1 ts 3 st 0(I) b 0 ok 1 E 2 a 0 o 0]: RECV SHM_OK/0 from 1
+ [tid 1 ts 4 st 0(I) b 0 ok 2 E 2 a 0 o 0]: RECV SHM_OK/0 from 2
+ [tid 1 ts 5 st 0(I) b 0 ok 3 E 2 a 0 o 0]: RECV SHM_OK/0 from 6
+ [tid 1 ts 6 st 0(I) b 0 ok 4 E 2 a 0 o 0]: RECV SHM_OK/0 from 3
+ [tid 0 ts 6 st 0(I) b 0 ok 4 E 2 a 0 o 0]: RECV SHM_OK/0 from 3
+ [tid 0 ts 7 st 0(I) b 0 ok 5 E 2 a 0 o 0]: RECV SHM_OK/0 from 4
+ [tid 0 ts 8 st 0(I) b 0 ok 6 E 2 a 0 o 0]: RECV SHM_OK/0 from 5
+ [tid 0 ts 8 st 3(O) b 0 ok 7 E 2 a 0 o 0]:                                     -> STATE ORD
+ [tid 0 ts 9 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 1
+ [tid 0 ts 10 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 2
+ [tid 0 ts 12 st 3(O) b 0 ok 7 E 2 a 0 o 0]: RECV ACK/0 from 1
+ [tid 0 ts 12 st 3(O) b 0 ok 7 E 2 a 0 o 0]: ACK <- 1
+ [tid 0 ts 13 st 3(O) b 0 ok 7 E 2 a 1 o 0]: RECV PAR/11 from 2
+ [tid 0 ts 13]: ACKING (8, 0) < (11, 2) |
+ [tid 0 ts 14 st 3(O) b 0 ok 7 E 2 a 1 o 0]: SEND ACK to 2
+ [tid 2 ts 4 st 0(I) b 0 ok 2 E 2 a 0 o 0]: RECV SHM_OK/0 from 6
+ [tid 2 ts 5 st 0(I) b 0 ok 3 E 2 a 0 o 0]: RECV SHM_OK/0 from 1
+ [tid 2 ts 6 st 0(I) b 0 ok 4 E 2 a 0 o 0]: RECV SHM_OK/0 from 3
+ [tid 2 ts 7 st 0(I) b 0 ok 5 E 2 a 0 o 0]: RECV SHM_OK/0 from 4
+ [tid 2 ts 8 st 0(I) b 0 ok 6 E 2 a 0 o 0]: RECV SHM_OK/0 from 5
+ [tid 2 ts 8 st 3(O) b 0 ok 7 E 2 a 0 o 0]:                                     -> STATE ORD
+ [tid 2 ts 12 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 0
+ [tid 2 ts 13 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 1
+ [tid 2 ts 11 st 3(O) b 0 ok 7 E 2 a 0 o 0]: RECV PAR/8 from 0
+ [tid 2 ts 13]: ACKING (8, 0) < (11, 2) |
+ [tid 2 ts 14 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 0
+ [tid 2 ts 15 st 3(O) b 0 ok 7 E 2 a 0 o 0]: RECV ACK/0 from 0
+ [tid 2 ts 15 st 3(O) b 0 ok 7 E 2 a 0 o 0]: ACK <- 0
+ [tid 2 ts 16 st 3(O) b 0 ok 7 E 2 a 1 o 0]: RECV ACK/0 from 1
+ [tid 2 ts 16 st 3(O) b 0 ok 7 E 2 a 1 o 0]: ACK <- 1
+ [tid 2 ts 16]: RESERVING +0: (8, 0) < (11, 2) |
+ [tid 2 ts 16 st 2(A) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE AWAIT
+ [tid 2 ts 16 st 2(A) b 0 ok 7 E 2 a 0 o 0]: PLACE 1
+ [tid 2 ts 17 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 3
+ [tid 2 ts 18 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 4
+ [tid 2 ts 19 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV PAR/15 from 1
+ [tid 2 ts 19]: ACKING (8, 0) < (15, 1) |
+ [tid 2 ts 20 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 1
+ [tid 2 ts 24 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV ORD/0 from 3
+ [tid 2 ts 25 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV REQ/22 from 0
+ [tid 2 ts 26 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 0
+ [tid 0 ts 15 st 3(O) b 0 ok 7 E 2 a 1 o 0]: RECV ACK/0 from 2
+ [tid 0 ts 15 st 3(O) b 0 ok 7 E 2 a 1 o 0]: ACK <- 2
+ [tid 0 ts 15]: RESERVING +0: (8, 0) < (11, 2) |
+ [tid 0 ts 15 st 2(A) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE AWAIT
+ [tid 0 ts 15 st 2(A) b 0 ok 7 E 2 a 0 o 0]: PLACE 0
+ [tid 0 ts 16 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 3
+ [tid 0 ts 17 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 4
+ [tid 0 ts 18 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV PAR/15 from 1
+ [tid 0 ts 18]: ACKING (11, 2) < (15, 1) |
+ [tid 0 ts 19 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 1
+ [tid 0 ts 22 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV ORD/0 from 3
+ [tid 0 ts 22 st 4(P) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE PAIR
+ [tid 0 ts 22 st 4(P) b 0 ok 7 E 2 a 0 o 0]: PAIR 3 @ 0
+ [tid 0 ts 22 st 4(P) b 0 ok 7 E 2 a 0 o 0]: ------START ENTER------
+ [tid 0 ts 23 st 4(P) b 0 ok 7 E 2 a 0 o 22]: SEND REQ to 1
+ [tid 0 ts 24 st 4(P) b 0 ok 7 E 2 a 0 o 22]: SEND REQ to 2
+ [tid 0 ts 28 st 4(P) b 0 ok 7 E 2 a 0 o 22]: RECV ACK/0 from 1
+ [tid 1 ts 7 st 0(I) b 0 ok 5 E 2 a 0 o 0]: RECV SHM_OK/0 from 4
+ [tid 1 ts 8 st 0(I) b 0 ok 6 E 2 a 0 o 0]: RECV SHM_OK/0 from 5
+ [tid 1 ts 10 st 0(I) b 0 ok 7 E 2 a 0 o 0]: RECV PAR/8 from 0
+ [tid 1 ts 10]: ACKING (8, 0) |
+ [tid 1 ts 11 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 0
+ [tid 1 ts 14 st 3(O) b 0 ok 7 E 2 a 0 o 0]: RECV PAR/11 from 2
+ [tid 1 ts 14]: ACKING (8, 0) < (11, 2) |
+ [tid 1 ts 15 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 2
+ [tid 1 ts 10 st 3(O) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE ORD
+ [tid 1 ts 16 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 0
+ [tid 1 ts 17 st 3(O) b 0 ok 7 E 2 a 0 o 0]: SEND PAR to 2
+ [tid 1 ts 21 st 3(O) b 0 ok 7 E 2 a 0 o 0]: RECV ACK/0 from 2
+ [tid 1 ts 21 st 3(O) b 0 ok 7 E 2 a 0 o 0]: ACK <- 2
+ [tid 1 ts 22 st 3(O) b 0 ok 7 E 2 a 1 o 0]: RECV ACK/0 from 0
+ [tid 1 ts 22 st 3(O) b 0 ok 7 E 2 a 1 o 0]: ACK <- 0
+ [tid 1 ts 22]: RESERVING +0: (8, 0) < (11, 2) < (15, 1) |
+ [tid 1 ts 22 st 2(A) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE AWAIT
+ [tid 1 ts 22 st 2(A) b 0 ok 7 E 2 a 0 o 0]: PLACE 2
+ [tid 1 ts 23 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 3
+ [tid 1 ts 24 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ORD to 4
+ [tid 1 ts 25 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV ORD/0 from 3
+ [tid 1 ts 26 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV REQ/22 from 0
+ [tid 1 ts 27 st 2(A) b 0 ok 7 E 2 a 0 o 0]: SEND ACK to 0
+ [tid 2 ts 30 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV ORD/1 from 4
+ [tid 2 ts 30 st 4(P) b 0 ok 7 E 2 a 0 o 0]:                                    -> STATE PAIR
+ [tid 2 ts 30 st 4(P) b 0 ok 7 E 2 a 0 o 0]: PAIR 4 @ 1
+ [tid 0 ts 28 st 4(P) b 0 ok 7 E 2 a 1 o 22]: ////// TRY ENTER \\\\\\
+ [tid 0 ts 28 st 4(P) b 0 ok 7 E 1 a 1 o 22]: TO_CRIT
+ [tid 0 ts 28 st 5(C) b 0 ok 7 E 1 a 1 o 22]:                                   -> STATE CRIT
+ [tid 0 ts 28 st 5(C) b 0 ok 7 E 1 a 1 o 22]: -------DEC--------
+ [tid 0 ts 29 st 5(C) b 0 ok 7 E 1 a 1 o 22]: RECV ACK/0 from 2
+ [tid 0 ts 30 st 5(C) b 0 ok 7 E 1 a 1 o 22]: RECV ORD/1 from 4
+ [tid 0 ts 28 st 5(C) b 0 ok 7 E 1 a 1 o 22]:                                   -> STATE CRIT
+ [tid 0 ts 30 st 5(C) b 0 ok 7 E 1 a 1 o 22]: CRIT
+ [tid 1 ts 29 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV ORD/1 from 4
+ [tid 1 ts 32 st 2(A) b 0 ok 7 E 2 a 0 o 0]: RECV DEC/0 from 0
+ [tid 1 ts 33 st 2(A) b 0 ok 7 E 1 a 0 o 0]: SEND DACK to 0
+ [tid 2 ts 30 st 4(P) b 0 ok 7 E 2 a 0 o 0]: ------START ENTER------
+ [tid 2 ts 31 st 4(P) b 0 ok 7 E 2 a 0 o 30]: SEND REQ to 0
+ [tid 2 ts 32 st 4(P) b 0 ok 7 E 2 a 0 o 30]: SEND REQ to 1
+ [tid 2 ts 33 st 4(P) b 0 ok 7 E 2 a 0 o 30]: RECV DEC/0 from 0
+ [tid 2 ts 34 st 4(P) b 0 ok 7 E 1 a 0 o 30]: SEND DACK to 0
+ [tid 2 ts 35 st 4(P) b 0 ok 7 E 1 a 0 o 30]: RECV ACK/0 from 0
+ [tid 2 ts 35 st 4(P) b 0 ok 7 E 1 a 1 o 30]: ////// TRY ENTER \\\\\\
+ [tid 2 ts 36 st 4(P) b 0 ok 7 E 1 a 1 o 30]: RECV ACK/0 from 1
+ [tid 2 ts 36 st 4(P) b 0 ok 7 E 1 a 2 o 30]: ////// TRY ENTER \\\\\\
+ [tid 2 ts 36 st 4(P) b 0 ok 7 E 0 a 2 o 30]: TO_CRIT
+ [tid 2 ts 36 st 5(C) b 0 ok 7 E 0 a 2 o 30]:                                   -> STATE CRIT
+ [tid 2 ts 36 st 5(C) b 0 ok 7 E 0 a 2 o 30]: -------DEC--------
+ [tid 2 ts 48 st 5(C) b 0 ok 7 E 0 a 2 o 30]: RECV PAR/45 from 0
+ [tid 2 ts 48]: ACKING (15, 1) < (45, 0) |
+ [tid 2 ts 49 st 5(C) b 0 ok 7 E 0 a 2 o 30]: SEND ACK to 0
+ [tid 2 ts 52 st 5(C) b 0 ok 7 E 0 a 2 o 30]: RECV ORD/2 from 3
+ [tid 2 ts 54 st 5(C) b 0 ok 7 E 0 a 2 o 30]: RECV REQ/51 from 1
+ [tid 2 ts 55 st 5(C) b 0 ok 7 E 0 a 2 o 30]: SEND ACK to 1
+ [tid 2 ts 58 st 5(C) b 0 ok 7 E 0 a 2 o 30]: RECV FIN/0 from 1
+ [tid 2 ts 58 st 5(C) b 0 ok 7 E 0 a 2 o 30]: FIN
+ [tid 0 ts 31 st 5(C) b 0 ok 7 E 1 a 1 o 22]: SEND DEC to 1
+ [tid 0 ts 32 st 5(C) b 0 ok 7 E 1 a 1 o 22]: SEND DEC to 2
+ [tid 0 ts 33 st 5(C) b 0 ok 7 E 1 a 1 o 22]: RECV REQ/30 from 2
+ [tid 0 ts 34 st 6(W) b 0 ok 7 E 1 a 1 o 22]: SEND ACK to 2
+ [tid 0 ts 35 st 6(W) b 0 ok 7 E 1 a 1 o 22]: RECV DACK/0 from 1
+ [tid 0 ts 33 st 6(W) b 0 ok 7 E 1 a 1 o 22]:                                   -> STATE WORK
+ [tid 0 ts 37 st 6(W) b 0 ok 7 E 1 a 1 o 22]: SEND STA to 3
+ [tid 0 ts 36 st 6(W) b 0 ok 7 E 1 a 1 o 22]: RECV DACK/0 from 2
+ [tid 0 ts 37 st 6(W) b 0 ok 7 E 1 a 1 o 22]: START 3
+ [tid 0 ts 37 st 6(W) b 0 ok 7 E 1 a 1 o 22]: END 3
+ [tid 0 ts 38 st 6(W) b 0 ok 7 E 1 a 1 o 22]: SEND END to 3
+ [tid 0 ts 45 st 6(W) b 0 ok 7 E 1 a 1 o 22]: RECV END/0 from 3
+ [tid 0 ts 45 st 7(L) b 0 ok 7 E 1 a 1 o 22]:                                   -> STATE LEAVE
+ [tid 0 ts 45 st 7(L) b 0 ok 7 E 1 a 1 o 22]: [[[ NO Z ]]]
+ [tid 0 ts 45 st 3(O) b 0 ok 7 E 1 a 1 o 22]:                                   -> STATE ORD
+ [tid 0 ts 46 st 3(O) b 0 ok 7 E 1 a 0 o 22]: SEND PAR to 1
+ [tid 0 ts 47 st 3(O) b 0 ok 7 E 1 a 0 o 22]: SEND PAR to 2
+ [tid 0 ts 49 st 3(O) b 0 ok 7 E 1 a 0 o 22]: RECV ACK/0 from 1
+ [tid 0 ts 49 st 3(O) b 0 ok 7 E 1 a 0 o 22]: ACK <- 1
+ [tid 0 ts 50 st 3(O) b 0 ok 7 E 1 a 1 o 22]: RECV ACK/0 from 2
+ [tid 0 ts 50 st 3(O) b 0 ok 7 E 1 a 1 o 22]: ACK <- 2
+ [tid 0 ts 50]: RESERVING +1: (11, 2) < (15, 1) < (45, 0) |
+ [tid 0 ts 50 st 2(A) b 0 ok 7 E 1 a 0 o 22]:                                   -> STATE AWAIT
+ [tid 0 ts 50 st 2(A) b 0 ok 7 E 1 a 0 o 22]: PLACE 3
+ [tid 0 ts 51 st 2(A) b 0 ok 7 E 1 a 0 o 22]: SEND ORD to 3
+ [tid 0 ts 52 st 2(A) b 0 ok 7 E 1 a 0 o 22]: SEND ORD to 4
+ [tid 0 ts 53 st 2(A) b 0 ok 7 E 1 a 0 o 22]: RECV ORD/2 from 3
+ [tid 0 ts 54 st 2(A) b 0 ok 7 E 1 a 0 o 22]: RECV REQ/51 from 1
+ [tid 0 ts 55 st 2(A) b 0 ok 7 E 1 a 0 o 22]: SEND ACK to 1
+ [tid 0 ts 58 st 2(A) b 0 ok 7 E 1 a 0 o 22]: RECV FIN/0 from 1
+ [tid 0 ts 58 st 2(A) b 0 ok 7 E 1 a 0 o 22]: FIN
+ [tid 1 ts 34 st 2(A) b 0 ok 7 E 1 a 0 o 0]: RECV REQ/30 from 2
+ [tid 1 ts 35 st 2(A) b 0 ok 7 E 1 a 0 o 0]: SEND ACK to 2
+ [tid 1 ts 47 st 2(A) b 0 ok 7 E 1 a 0 o 0]: RECV PAR/45 from 0
+ [tid 1 ts 47]: ACKING (11, 2) < (45, 0) |
+ [tid 1 ts 48 st 2(A) b 0 ok 7 E 1 a 0 o 0]: SEND ACK to 0
+ [tid 1 ts 51 st 2(A) b 0 ok 7 E 1 a 0 o 0]: RECV ORD/2 from 3
+ [tid 1 ts 51 st 4(P) b 0 ok 7 E 1 a 0 o 0]:                                    -> STATE PAIR
+ [tid 1 ts 51 st 4(P) b 0 ok 7 E 1 a 0 o 0]: PAIR 3 @ 2
+ [tid 1 ts 51 st 4(P) b 0 ok 7 E 1 a 0 o 0]: ------START ENTER------
+ [tid 1 ts 52 st 4(P) b 0 ok 7 E 1 a 0 o 51]: SEND REQ to 0
+ [tid 1 ts 53 st 4(P) b 0 ok 7 E 1 a 0 o 51]: SEND REQ to 2
+ [tid 1 ts 56 st 4(P) b 0 ok 7 E 1 a 0 o 51]: RECV ACK/0 from 2
+ [tid 1 ts 56 st 4(P) b 0 ok 7 E 1 a 1 o 51]: ////// TRY ENTER \\\\\\
+ [tid 1 ts 57 st 4(P) b 0 ok 7 E 1 a 1 o 51]: RECV ACK/0 from 0
+ [tid 1 ts 57 st 4(P) b 0 ok 7 E 1 a 2 o 51]: ////// TRY ENTER \\\\\\
+ [tid 1 ts 57 st 4(P) b 0 ok 7 E 0 a 2 o 51]: TO_CRIT
+ [tid 1 ts 57 st 5(C) b 0 ok 7 E 0 a 2 o 51]:                                   -> STATE CRIT
+ [tid 1 ts 57 st 5(C) b 0 ok 7 E 0 a 2 o 51]: -------DEC--------
+ [tid 1 ts 57 st 5(C) b 0 ok 7 E 0 a 2 o 51]: BCAST FIN 0
+ [tid 1 ts 57 st 5(C) b 0 ok 7 E 0 a 2 o 51]:                                   -> STATE CRIT
+ [tid 1 ts 58 st 5(C) b 0 ok 7 E 0 a 2 o 51]: CRIT
+ [tid 1 ts 59 st 5(C) b 0 ok 7 E 0 a 2 o 51]: SEND DEC to 0
+ [tid 1 ts 60 st 5(C) b 0 ok 7 E 0 a 2 o 51]: SEND DEC to 2
+ [tid 1 ts 60 st 6(W) b 0 ok 7 E 0 a 2 o 51]:                                   -> STATE WORK
+ [tid 1 ts 61 st 6(W) b 0 ok 7 E 0 a 2 o 51]: SEND STA to 3
+ [tid 1 ts 61 st 6(W) b 0 ok 7 E 0 a 2 o 51]: START 3
+ [tid 1 ts 58 st 5(C) b 0 ok 7 E 0 a 2 o 51]: RECV FIN/0 from 1
+ [tid 1 ts 61 st 6(W) b 0 ok 7 E 0 a 2 o 51]: FIN
+ [tid 1 ts 61 st 6(W) b 0 ok 7 E 0 a 2 o 51]: END 3
+ [tid 1 ts 62 st 6(W) b 0 ok 7 E 0 a 2 o 51]: SEND END to 3
+ [tid 2 ts 58 st 5(C) b 0 ok 7 E 0 a 2 o 30]:                                   -> STATE CRIT

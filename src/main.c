@@ -17,6 +17,7 @@
 int base_time = 100000;
 
 int enter_count = 0;
+int ok_count = 0;
 
 void random_sleep2(int min, int max) {
     usleep((min + rand() % (max-min)) * base_time);
@@ -53,6 +54,7 @@ queue_t qu_x = QUEUE_INIT;
 queue_t qu_z = QUEUE_INIT;
 
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t crit_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t start_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t pair_mut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
@@ -83,12 +85,16 @@ void release_z() {
 
 void wakeup_z() {
     debug(10, "\t\t\t*WAKING");
+    SHM_SAFE(
+        shm_info_arr[rank].y += 1;
+    )
     psend_to_typ_all(PT_Z, WAKE, 0);
 }
 
 void try_leave() {
     if (dack_count == cown - 1) {
         if (!energy) {
+            blocked = 1;
             wakeup_z();
             SHM_SAFE(
                 shm_info_arr[rank].msg = '!';
@@ -103,7 +109,7 @@ void inc_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = ack_count;
-        sprintf(shm_info_arr[rank].pad3, "%d", ack_count % 1000);
+        snprintf(shm_info_arr[rank].pad3, 3, "%d", ack_count % 1000);
     )
 }
 
@@ -112,16 +118,21 @@ void zero_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = 0;
-        sprintf(shm_info_arr[rank].pad3, "%d", ack_count  % 1000);
+        snprintf(shm_info_arr[rank].pad3, 3, "%d", ack_count  % 1000);
     )
 }
 
 void try_init_shm() {
     if (HAS_SHM) {
         pthread_mutex_lock(&memlock);
-        if (HAS_SHM) {
+        if (1) {
             init_shm();
             debug(0, "HAS SHM: %d", HAS_SHM);
+
+            // sync_all_with_msg(SHM_OK, 0);
+            // pthread_mutex_lock(&start_mut);
+
+            
             // if (!MEM_INIT) {
             //     sync_all_with_msg(FIN, 0);
             // }
@@ -133,7 +144,7 @@ void try_init_shm() {
 void set_place(int newplace) {
     place = newplace;
     SHM_SAFE(
-        sprintf(shm_info_arr[rank].pad4, "%d", place % 1000);
+        snprintf(shm_info_arr[rank].pad4, 3, "%d", place % 1000);
     )
 }
 
@@ -175,17 +186,18 @@ void try_reserve_place() {
 void notify_enter() {
     ++enter_count;
     SHM_SAFE(
-        sprintf(shm_info_arr[rank].pad2, "%d", enter_count % 1000);
+        snprintf(shm_info_arr[rank].pad2, 3, "%d", enter_count % 1000);
     )
 }
 
 void try_enter() { // X
+    debug(10, "////// TRY ENTER \\\\\\\\\\\\");
     if (state == ST_PAIR && ack_count >= cown - energy) {
         if (!blocked) {
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
-            pthread_mutex_unlock(&mut); // -> ST_CRIT
+            pthread_mutex_unlock(&crit_mut); // -> ST_CRIT
 
             debug(1, "-------DEC--------");
 
@@ -252,11 +264,12 @@ void release_place() { // Y
 void* main_th_xy(void *p) {
     debug(20, "MAIN %d %d %d", rank, cown, copp)
 
-    try_init_shm();
-
     pthread_mutex_lock(&can_leave);
     pthread_mutex_lock(&start_mut);
     pthread_mutex_lock(&pair_mut);
+    pthread_mutex_lock(&crit_mut);
+
+    try_init_shm();
 
     while(state != ST_FIN) {
         start_order();
@@ -268,18 +281,22 @@ void* main_th_xy(void *p) {
             SHM_SAFE(
                 shm_info_arr[rank].msg = '#';
             )
-            debug(15, "------TRY ENTER------");
+            debug(15, "------START ENTER------");
             start_enter_crit(); // ST_PAIR
-            pthread_mutex_lock(&mut);
+            pthread_mutex_lock(&crit_mut);
             change_state(ST_CRIT);
+
+            debug(15, "CRIT");
+
             psend_to_typ(styp, DEC, 0); // ST_CRIT
 
             SHM_SAFE(
                 shm_info_arr[rank].msg = 0;
             )
-            
-            debug(15, "CRIT");
 
+            change_state(ST_WORK);
+
+            // release queued X
             int pid;
             while ((pid = qpop(&qu_x)) != -1) {
                 psend(pid, ACK);
@@ -290,12 +307,13 @@ void* main_th_xy(void *p) {
         } else {
             pthread_mutex_lock(&start_mut); // Y wait for START
             release_place();
+            change_state(ST_WORK);
             
         }
 
         notify_enter();
 
-        change_state(ST_WORK);
+        
 
         debug(15, "START %d", pair);
 
@@ -327,9 +345,11 @@ void* main_th_xy(void *p) {
 
 void *main_th_z(void *p) {
 
+    pthread_mutex_lock(&start_mut);
+
     try_init_shm();
 
-    pthread_mutex_lock(&start_mut);
+    
 
     while (state != ST_FIN) {
         pthread_mutex_lock(&mut);

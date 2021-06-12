@@ -41,7 +41,8 @@ static char *state_map[] = {
 (DACK) \
 (INC) \
 (WAKE) \
-(ZREQ)
+(ZREQ) \
+(SHM_OK) \
 
 typedef enum {
 #define EXPAND_FUN EXPAND

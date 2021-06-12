@@ -1,0 +1,478 @@
+ [tid 0 ts 13 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 2
+ [tid 0 ts 13 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 2
+ [tid 0 ts 15 st 3(O) b 0 ok 7 E 2 a 1]: SEND ACK to 1
+ [tid 0 ts 16 st 3(O) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 12 st 0(I) b 0 ok 7 E 2 a 0]: SEND ACK to 0
+ [tid 2 ts 15 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 1
+ [tid 3 ts 11 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 13 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 0
+ [tid 1 ts 16 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 16 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 0
+ [tid 1 ts 17 st 3(O) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 17 st 3(O) b 0 ok 7 E 2 a 1]: ACK <- 2
+ [tid 3 ts 20 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 20 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 4 ts 12 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 12 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 4 ts 17 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 0 ts 16 st 3(O) b 0 ok 7 E 2 a 1]: ACK <- 1
+ [tid 0 ts 20 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 2
+ [tid 0 ts 22 st 4(P) b 0 ok 7 E 2 a 0]: SEND REQ to 1
+ [tid 0 ts 23 st 4(P) b 0 ok 7 E 2 a 0]: SEND REQ to 2
+ [tid 0 ts 25 st 4(P) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 1
+ [tid 1 ts 21 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 2
+ [tid 1 ts 23 st 2(A) b 0 ok 7 E 2 a 0]: RECV REQ/21 from 0
+ [tid 1 ts 24 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 0
+ [tid 2 ts 21 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 21 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 0
+ [tid 2 ts 22 st 3(O) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 22 st 3(O) b 0 ok 7 E 2 a 1]: ACK <- 1
+ [tid 2 ts 26 st 2(A) b 0 ok 7 E 2 a 0]: RECV REQ/21 from 0
+ [tid 2 ts 27 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 0
+ [tid 0 ts 25 st 5(C) b 0 ok 7 E 1 a 1]: -------DEC--------
+ [tid 0 ts 28 st 5(C) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 37 st 6(W) b 0 ok 7 E 1 a 1]: RECV REQ/32 from 1
+ [tid 0 ts 38 st 6(W) b 0 ok 7 E 1 a 1]: SEND ACK to 1
+ [tid 0 ts 44 st 3(O) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 44 st 3(O) b 0 ok 7 E 1 a 0]: ACK <- 1
+ [tid 0 ts 45 st 3(O) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 3 ts 36 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 42 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 33 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 1 ts 34 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 2
+ [tid 1 ts 37 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 2
+ [tid 1 ts 39 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 0
+ [tid 1 ts 39 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 1 ts 43 st 5(C) b 0 ok 7 E 0 a 2]: SEND ACK to 0
+ [tid 0 ts 45 st 3(O) b 0 ok 7 E 1 a 1]: ACK <- 2
+ [tid 0 ts 51 st 2(A) b 1 ok 7 E 0 a 0]: RECV REQ/48 from 2
+ [tid 0 ts 52 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 0 ts 54 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 0 ts 55 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 0 ts 56 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 0 ts 57 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 2 ts 35 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/32 from 1
+ [tid 2 ts 36 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 44 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 2 ts 49 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 0
+ [tid 2 ts 50 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 1
+ [tid 2 ts 53 st 4(P) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 55 st 4(P) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 56 st 4(P) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 2 ts 57 st 4(P) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 2 ts 58 st 4(P) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 2 ts 59 st 4(P) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 4 ts 37 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 43 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 43 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 4 ts 51 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 5 ts 53 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 54 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 55 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 56 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 57 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 5 ts 58 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 3 ts 52 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 6 ts 54 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 55 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 56 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 6 ts 58 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 60 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 6 ts 61 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 1 ts 53 st 6(W) b 0 ok 7 E 0 a 2]: RECV REQ/48 from 2
+ [tid 1 ts 54 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 2
+ [tid 1 ts 55 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 1 ts 56 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 1 ts 57 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 1 ts 58 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 1 ts 64 st 3(O) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 64 st 3(O) b 0 ok 7 E 1 a 0]: ACK <- 0
+ [tid 1 ts 66 st 3(O) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 66 st 3(O) b 0 ok 7 E 2 a 1]: ACK <- 2
+ [tid 1 ts 72 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/69 from 0
+ [tid 1 ts 73 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 3 ts 65 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 65 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 3 ts 74 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 85 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 1 ts 86 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 1 ts 87 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 1 ts 88 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 6 ts 84 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 85 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 86 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 6 ts 88 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 89 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 6 ts 90 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 0 ts 63 st 2(A) b 1 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 0 ts 70 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 0 ts 71 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 2
+ [tid 0 ts 74 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 75 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 75 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 0 ts 84 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 0 ts 85 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 0 ts 86 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 0 ts 87 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 0 ts 93 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 2
+ [tid 4 ts 64 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 75 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 82 st 6(W) b 0 ok 7 E 2 a 1]: SEND ACK to 3
+ [tid 4 ts 95 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 2 ts 64 st 4(P) b 1 ok 7 E 1 a 2]: SEND ACK to 1
+ [tid 2 ts 65 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 2 ts 73 st 6(W) b 0 ok 7 E 1 a 2]: RECV REQ/69 from 0
+ [tid 2 ts 74 st 6(W) b 0 ok 7 E 1 a 2]: SEND ACK to 0
+ [tid 2 ts 86 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 2 ts 87 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 2 ts 88 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 2 ts 89 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 2 ts 94 st 3(O) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 94 st 3(O) b 1 ok 7 E 0 a 0]: ACK <- 0
+ [tid 2 ts 95 st 3(O) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 95 st 3(O) b 1 ok 7 E 0 a 1]: ACK <- 1
+ [tid 5 ts 83 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 84 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 85 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 86 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 87 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 5 ts 88 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 4 ts 95 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 3 ts 83 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 94 st 6(W) b 0 ok 7 E 2 a 1]: SEND ACK to 4
+ [tid 1 ts 94 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 1 ts 101 st 4(P) b 1 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 1 ts 102 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 1 ts 103 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 2
+ [tid 1 ts 106 st 4(P) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 2
+ [tid 1 ts 108 st 4(P) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 0
+ [tid 1 ts 110 st 4(P) b 1 ok 7 E 1 a 2]: RECV REQ/107 from 2
+ [tid 1 ts 111 st 4(P) b 1 ok 7 E 1 a 2]: SEND ACK to 2
+ [tid 0 ts 102 st 3(O) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 102 st 3(O) b 0 ok 7 E 1 a 0]: ACK <- 1
+ [tid 0 ts 103 st 3(O) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 103 st 3(O) b 0 ok 7 E 1 a 1]: ACK <- 2
+ [tid 0 ts 106 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/101 from 1
+ [tid 0 ts 107 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 0 ts 109 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/107 from 2
+ [tid 0 ts 110 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 2
+ [tid 3 ts 103 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 103 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 4 ts 102 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 2 ts 102 st 2(A) b 1 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 2 ts 104 st 2(A) b 1 ok 7 E 1 a 0]: RECV REQ/101 from 1
+ [tid 2 ts 105 st 2(A) b 1 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 108 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 2 ts 109 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 2 ts 111 st 4(P) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 112 st 4(P) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 113 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 1 ts 112 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 4 ts 123 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 125 st 6(W) b 0 ok 7 E 2 a 1]: SEND ACK to 3
+ [tid 3 ts 122 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 2 ts 128 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 2 ts 129 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 2 ts 130 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 2 ts 131 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 3 ts 126 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 1 ts 126 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 1 ts 127 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 1 ts 128 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 5 ts 124 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 125 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 126 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 127 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 132 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 5 ts 133 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 0 ts 125 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 0 ts 126 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 0 ts 127 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 0 ts 128 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 6 ts 125 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 126 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 127 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 6 ts 129 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 130 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 2 ts 132 st 3(O) b 1 ok 7 E 0 a 2]:                [tid 6 ts 131 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 3 ts 133 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 134 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 134 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 1 ts 129 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 1 ts 136 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 2
+ [tid 0 ts 135 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 4 ts 132 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 134 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 134 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 2 ts 136 st 3(O) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 136 st 3(O) b 1 ok 7 E 0 a 0]: ACK <- 0
+ [tid 2 ts 137 st 3(O) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 137 st 3(O) b 1 ok 7 E 0 a 1]: ACK <- 1
+ [tid 0 ts 140 st 4(P) b 0 ok 7 E 2 a 0]: SEND REQ to 1
+ [tid 0 ts 141 st 4(P) b 0 ok 7 E 2 a 0]: SEND REQ to 2
+ [tid 0 ts 143 st 4(P) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 143 st 5(C) b 0 ok 7 E 1 a 1]: -------DEC--------
+ [tid 0 ts 146 st 5(C) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 143 st 5(C) b 0 ok 7 E 1 a 1]:                [tid 1 ts 141 st 6(W) b 0 ok 7 E 2 a 2]: RECV REQ/139 from 0
+ [tid 1 ts 142 st 6(W) b 0 ok 7 E 2 a 2]: SEND ACK to 0
+ [tid 2 ts 144 st 4(P) b 0 ok 7 E 2 a 0]: RECV REQ/139 from 0
+ [tid 2 ts 145 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 0
+ [tid 1 ts 155 st 3(O) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 155 st 3(O) b 0 ok 7 E 1 a 0]: ACK <- 0
+ [tid 2 ts 153 st 4(P) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 0 ts 154 st 6(W) b 0 ok 7 E 1 a 1]: SEND ACK to 1
+ [tid 1 ts 156 st 3(O) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 156 st 3(O) b 0 ok 7 E 1 a 1]: ACK <- 2
+ [tid 1 ts 159 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/153 from 2
+ [tid 1 ts 160 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 2
+ [tid 0 ts 155 st 6(W) b 0 ok 7 E 1 a 1]: RECV REQ/153 from 2
+ [tid 0 ts 156 st 6(W) b 0 ok 7 E 1 a 1]: SEND ACK to 2
+ [tid 2 ts 154 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 2 ts 155 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 2 ts 157 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 161 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 161 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 4 ts 161 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 169 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 1 ts 172 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 1 ts 173 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 1 ts 174 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 1 ts 175 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 3 ts 162 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 168 st 6(W) b 0 ok 7 E 2 a 1]: SEND ACK to 4
+ [tid 5 ts 169 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 170 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 171 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 175 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 176 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 0 ts 171 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 6
+ [tid 0 ts 172 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 6
+ [tid 0 ts 173 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 5
+ [tid 0 ts 174 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 5
+ [tid 2 ts 173 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 2 ts 174 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 2 ts 175 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 2 ts 177 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 3 ts 182 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 182 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 6 ts 170 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 171 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 172 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 6 ts 173 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 175 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 6 ts 176 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 4 ts 181 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 1 ts 183 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 2 ts 184 st 3(O) b 0 ok 7 E 0 a 0]: RECV ACK/0 from 1
+ [tid 2 ts 184 st 3(O) b 0 ok 7 E 0 a 0]: ACK <- 1
+ [tid 2 ts 187 st 3(O) b 0 ok 7 E 0 a 1]: RECV ACK/0 from 0
+ [tid 2 ts 187 st 3(O) b 0 ok 7 E 0 a 1]: ACK <- 0
+ [tid 2 ts 187 st 2(A) b 0 ok 7 E 0 a 0]:                [tid 5 ts 178 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 0 ts 183 st 3(O) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 4 ts 188 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 188 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 4 ts 208 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 3 ts 187 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 207 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 187 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 0
+ [tid 1 ts 189 st 4(P) b 1 ok 7 E 0 a 0]: SEND ACK to 0
+ [tid 1 ts 190 st 4(P) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 188 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 2
+ [tid 1 ts 196 st 4(P) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 198 st 4(P) b 1 ok 7 E 1 a 2]: RECV REQ/195 from 2
+ [tid 1 ts 199 st 4(P) b 1 ok 7 E 1 a 2]: SEND ACK to 2
+ [tid 2 ts 191 st 2(A) b 0 ok 7 E 0 a 0]: SEND ACK to 0
+ [tid 2 ts 194 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/186 from 1
+ [tid 2 ts 195 st 4(P) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 196 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 2 ts 197 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 2 ts 199 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 200 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 200 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 0 ts 188 st 3(O) b 1 ok 7 E 0 a 0]: RECV REQ/186 from 1
+ [tid 0 ts 189 st 3(O) b 1 ok 7 E 0 a 0]: SEND ACK to 1
+ [tid 0 ts 191 st 3(O) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 191 st 3(O) b 1 ok 7 E 1 a 0]: ACK <- 1
+ [tid 0 ts 192 st 3(O) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 192 st 3(O) b 1 ok 7 E 1 a 1]: ACK <- 2
+ [tid 0 ts 197 st 2(A) b 1 ok 7 E 1 a 0]: RECV REQ/195 from 2
+ [tid 0 ts 198 st 2(A) b 1 ok 7 E 1 a 0]: SEND ACK to 2
+ [tid 0 ts 209 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 0 ts 210 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 5 ts 208 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 209 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 210 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 0 ts 219 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 2
+ [tid 0 ts 223 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 1
+ [tid 0 ts 224 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 2
+ [tid 0 ts 226 st 4(P) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 228 st 4(P) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 4 ts 219 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 219 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 3 ts 218 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 210 st 4(P) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 1 ts 211 st 4(P) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 1 ts 220 st 4(P) b 1 ok 7 E 0 a 2]: SEND ACK to 2
+ [tid 1 ts 224 st 4(P) b 1 ok 7 E 1 a 2]: RECV REQ/222 from 0
+ [tid 1 ts 225 st 4(P) b 1 ok 7 E 1 a 2]: SEND ACK to 0
+ [tid 2 ts 211 st 6(W) b 0 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 2 ts 212 st 6(W) b 0 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 2 ts 220 st 3(O) b 0 ok 7 E 0 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 220 st 3(O) b 0 ok 7 E 0 a 0]: ACK <- 0
+ [tid 2 ts 221 st 3(O) b 0 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 221 st 3(O) b 0 ok 7 E 0 a 1]: ACK <- 1
+ [tid 2 ts 226 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/222 from 0
+ [tid 2 ts 227 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 5 ts 211 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 212 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 5 ts 213 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 0 ts 229 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 1 ts 226 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 3 ts 234 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 239 st 6(W) b 0 ok 7 E 2 a 1]: SEND ACK to 4
+ [tid 1 ts 241 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 1 ts 243 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 1 ts 244 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 1 ts 245 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 0 ts 240 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 5
+ [tid 0 ts 241 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 5
+ [tid 0 ts 242 st 6(W) b 1 ok 7 E 0 a 2]: RECV ZREQ/0 from 6
+ [tid 0 ts 243 st 6(W) b 1 ok 7 E 0 a 2]: SEND ACK to 6
+ [tid 5 ts 239 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 240 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 242 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 243 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 244 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 1
+ [tid 5 ts 247 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 2
+ [tid 4 ts 233 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 240 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 6 ts 240 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 241 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 242 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 6 ts 244 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 245 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 6 ts 246 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 2 ts 243 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 2 ts 244 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 2 ts 245 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 2 ts 246 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 2 ts 250 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 1
+ [tid 4 ts 249 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 251 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 251 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 3 ts 250 st 3(O) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 251 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 251 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 1 ts 251 st 3(O) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 2
+ [tid 1 ts 251 st 3(O) b 1 ok 7 E 0 a 0]: ACK <- 2
+ [tid 1 ts 252 st 3(O) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 0
+ [tid 1 ts 252 st 3(O) b 1 ok 7 E 0 a 1]: ACK <- 0
+ [tid 1 ts 256 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 0
+ [tid 1 ts 260 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 0
+ [tid 1 ts 261 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 2
+ [tid 1 ts 263 st 4(P) b 0 ok 7 E 2 a 0]: RECV REQ/257 from 2
+ [tid 1 ts 264 st 4(P) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 2
+ [tid 1 ts 264 st 5(C) b 0 ok 7 E 1 a 1]: -------DEC--------
+ [tid 1 ts 268 st 5(C) b 0 ok 7 E 1 a 1]: SEND ACK to 2
+ [tid 1 ts 265 st 5(C) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 0
+ [tid 0 ts 249 st 7(L) b 1 ok 7 E 0 a 2]: SEND ACK to 1
+ [tid 0 ts 254 st 3(O) b 1 ok 7 E 0 a 0]: RECV ACK/0 from 2
+ [tid 0 ts 254 st 3(O) b 1 ok 7 E 0 a 0]: ACK <- 2
+ [tid 0 ts 257 st 3(O) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 0 ts 257 st 3(O) b 1 ok 7 E 0 a 1]: ACK <- 1
+ [tid 0 ts 262 st 2(A) b 0 ok 7 E 2 a 0]: RECV REQ/259 from 1
+ [tid 0 ts 263 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 1
+ [tid 0 ts 264 st 2(A) b 0 ok 7 E 2 a 0]: RECV REQ/257 from 2
+ [tid 0 ts 265 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 2
+ [tid 0 ts 279 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 5
+ [tid 0 ts 280 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 5
+ [tid 3 ts 273 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 281 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 5
+ [tid 1 ts 282 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 5
+ [tid 1 ts 283 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 6
+ [tid 1 ts 284 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 6
+ [tid 6 ts 280 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 6 ts 281 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 6 ts 282 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 278 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 0
+ [tid 5 ts 280 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 1
+ [tid 5 ts 281 st 2(A) b 0 ok 7 E 2 a 0]: SEND ZREQ to 2
+ [tid 5 ts 282 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 5 ts 284 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 2 ts 253 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 0
+ [tid 2 ts 258 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 0
+ [tid 2 ts 259 st 4(P) b 1 ok 7 E 0 a 0]: SEND REQ to 1
+ [tid 2 ts 262 st 4(P) b 1 ok 7 E 1 a 0]: RECV REQ/259 from 1
+ [tid 2 ts 263 st 4(P) b 1 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 266 st 4(P) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 266 st 5(C) b 0 ok 7 E 1 a 1]: -------DEC--------
+ [tid 2 ts 273 st 6(W) b 1 ok 7 E 0 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 282 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 5
+ [tid 2 ts 283 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 5
+ [tid 2 ts 284 st 6(W) b 1 ok 7 E 0 a 1]: RECV ZREQ/0 from 6
+ [tid 2 ts 285 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 6
+ [tid 4 ts 274 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 281 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 281 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 0 ts 281 st 2(A) b 1 ok 7 E 0 a 0]: RECV ZREQ/0 from 6
+ [tid 0 ts 282 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 6
+ [tid 0 ts 288 st 2(A) b 1 ok 7 E 0 a 0]: SEND ACK to 1
+ [tid 0 ts 291 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 0 ts 292 st 4(P) b 1 ok 7 E 1 a 0]: SEND REQ to 2
+ [tid 0 ts 295 st 4(P) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 2
+ [tid 0 ts 296 st 4(P) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 1
+ [tid 0 ts 297 st 5(C) b 0 ok 7 E 1 a 2]: -------DEC--------
+ [tid 0 ts 302 st 6(W) b 0 ok 7 E 1 a 2]: SEND ACK to 2
+ [tid 0 ts 315 st 3(O) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 1
+ [tid 0 ts 315 st 3(O) b 0 ok 7 E 1 a 0]: ACK <- 1
+ [tid 0 ts 316 st 3(O) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 0 ts 316 st 3(O) b 0 ok 7 E 1 a 1]: ACK <- 2
+ [tid 4 ts 290 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 297 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 3
+ [tid 4 ts 306 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 316 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 3
+ [tid 4 ts 316 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 3
+ [tid 3 ts 280 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 291 st 6(W) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 298 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 4
+ [tid 3 ts 298 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 4
+ [tid 3 ts 305 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 3 ts 315 st 4(P) b 0 ok 7 E 2 a 0]: SEND ACK to 4
+ [tid 1 ts 290 st 3(O) b 1 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 290 st 3(O) b 1 ok 7 E 1 a 0]: ACK <- 0
+ [tid 1 ts 291 st 3(O) b 1 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 291 st 3(O) b 1 ok 7 E 1 a 1]: ACK <- 2
+ [tid 1 ts 294 st 2(A) b 1 ok 7 E 1 a 0]: RECV REQ/290 from 0
+ [tid 1 ts 295 st 2(A) b 1 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 1 ts 299 st 2(A) b 0 ok 7 E 2 a 0]: SEND ACK to 2
+ [tid 1 ts 314 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 6 ts 283 st 2(A) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 0
+ [tid 6 ts 286 st 2(A) b 0 ok 7 E 2 a 1]: RECV ACK/0 from 2
+ [tid 6 ts 287 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 5 ts 285 st 2(A) b 0 ok 7 E 2 a 2]: RECV ACK/0 from 1
+ [tid 2 ts 289 st 6(W) b 1 ok 7 E 0 a 1]: SEND ACK to 1
+ [tid 2 ts 293 st 6(W) b 1 ok 7 E 1 a 1]: RECV REQ/290 from 0
+ [tid 2 ts 294 st 6(W) b 1 ok 7 E 1 a 1]: SEND ACK to 0
+ [tid 2 ts 300 st 3(O) b 0 ok 7 E 2 a 0]: RECV ACK/0 from 1
+ [tid 2 ts 300 st 3(O) b 0 ok 7 E 2 a 0]: ACK <- 1
+ [tid 2 ts 305 st 3(O) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 0
+ [tid 2 ts 305 st 3(O) b 0 ok 7 E 1 a 1]: ACK <- 0
+ [tid 2 ts 315 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 0
+ [tid 1 ts 320 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 1 ts 321 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 2
+ [tid 1 ts 323 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 1 ts 324 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 2
+ [tid 1 ts 324 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 0 ts 321 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/319 from 1
+ [tid 0 ts 322 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 322 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/319 from 1
+ [tid 2 ts 323 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 1
+ [tid 2 ts 324 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 0
+ [tid 2 ts 325 st 4(P) b 0 ok 7 E 1 a 0]: SEND REQ to 1
+ [tid 0 ts 325 st 2(A) b 0 ok 7 E 1 a 0]: RECV REQ/323 from 2
+ [tid 0 ts 326 st 2(A) b 0 ok 7 E 1 a 0]: SEND ACK to 2
+ [tid 2 ts 327 st 4(P) b 0 ok 7 E 1 a 0]: RECV ACK/0 from 0
+ [tid 2 ts 330 st 4(P) b 0 ok 7 E 1 a 1]: RECV ACK/0 from 1
+ [tid 2 ts 330 st 5(C) b 0 ok 7 E 0 a 2]: -------DEC--------
+ [tid 1 ts 326 st 5(C) b 0 ok 7 E 0 a 2]: RECV REQ/323 from 2
+ [tid 1 ts 329 st 5(C) b 0 ok 7 E 0 a 2]: SEND ACK to 2
