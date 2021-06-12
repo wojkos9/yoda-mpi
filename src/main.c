@@ -86,6 +86,18 @@ void wakeup_z() {
     psend_to_typ_all(PT_Z, WAKE, 0);
 }
 
+void try_leave() {
+    if (dack_count == cown - 1) {
+        if (!energy) {
+            wakeup_z();
+            SHM_SAFE(
+                shm_info_arr[rank].msg = '!';
+            )
+        }
+        pthread_mutex_unlock(&can_leave); // X -> ST_IDLE
+    }
+}
+
 void inc_ack() {
     ++ack_count;
     
@@ -202,21 +214,24 @@ void start_order() {
     zero_ack();
     psend_to_typ(styp, PAR, ts);
     // pthread_mutex_unlock(&lamut);
+
+    if (cown == 1) {
+        try_reserve_place();
+    }
 }
 
 void start_enter_crit() {
-    if (cown == 1) {
-        dack_count = 1;
-        try_enter();
-        pthread_mutex_unlock(&can_leave);
-        return;
-    }
     dack_count = 0;
 
-    pthread_mutex_lock(&lamut);
+    // pthread_mutex_lock(&lamut);
     own_req.x = lamport;
     psend_to_typ(styp, REQ, own_req.x);
-    pthread_mutex_unlock(&lamut);
+    // pthread_mutex_unlock(&lamut);
+
+    if (cown == 1) {
+        try_enter();
+        try_leave();
+    }
 }
 
 void release_place() {
@@ -292,10 +307,11 @@ void* main_th_xy(void *p) {
         if (styp == PT_X) {
             release_z();
         }
+
+        if (cown > 1) {
+            pthread_mutex_lock(&can_leave);
+        }
         
-        
-        
-        pthread_mutex_lock(&can_leave);
 
         
     }

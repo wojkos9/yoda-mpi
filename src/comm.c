@@ -103,15 +103,7 @@ void comm_th_xy() {
                 break;
             case DACK: // X
                 ++dack_count;
-                if (dack_count == cown - 1) {
-                    if (!energy) {
-                        wakeup_z();
-                        SHM_SAFE(
-                            shm_info_arr[rank].msg = '!';
-                        )
-                    }
-                    pthread_mutex_unlock(&can_leave); // X -> ST_IDLE
-                }
+                try_leave();
                 break;
             case END:
                 pthread_mutex_unlock(&mut); // -> ST_LEAVE
