@@ -168,14 +168,14 @@ void notify_enter() {
 }
 
 void try_enter() { // X
-    if (ack_count >= cown - energy) {
+    if (state == ST_PAIR && ack_count >= cown - energy) {
         if (!blocked) {
             --energy;
-            debug(5, "ENENENENENENNENENENEN %d\n", energy);
             debug(9, "TO_CRIT");
             pthread_mutex_unlock(&mut); // -> ST_CRIT
 
             debug(1, "-------DEC--------");
+            
             SHM_SAFE2(
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
