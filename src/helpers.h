@@ -8,6 +8,7 @@ extern void zero_ack();
 extern void change_state(ST newst);
 extern void try_reserve_place();
 extern void try_enter();
+extern void wakeup_z();
 extern void set_pair(int newpair);
 
 #endif // __HELPERS_H__

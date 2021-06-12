@@ -42,4 +42,10 @@ extern pthread_mutex_t memlock;
             op \
             }
 
+#define SHM_SAFE2(op) if (MEM_INIT) {\
+            pthread_mutex_lock(&shm_common->mut); \
+            op \
+            pthread_mutex_unlock(&shm_common->mut); \
+            }
+
 #endif // __SHM_H__

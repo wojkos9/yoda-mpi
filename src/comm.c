@@ -12,13 +12,15 @@ void comm_th_xy() {
 
     int ts, i;
 
-    while (state != ST_FIN) {
-        MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        pthread_mutex_lock(&lamut);
-        lamport = MAX(lamport, pkt.ts) + 1;
-        pthread_mutex_unlock(&lamut);
+    int fin = 0;
 
-        debug(20 || status.MPI_TAG == ZREQ, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
+    while (state != ST_FIN && !fin) {
+        MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        // pthread_mutex_lock(&lamut);
+        lamport = MAX(lamport, pkt.ts) + 1;
+        // pthread_mutex_unlock(&lamut);
+
+        debug(20, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 
         switch (status.MPI_TAG) {
             case PAR:
@@ -75,7 +77,7 @@ void comm_th_xy() {
                 break;
             case FIN: // never used unless internal fail
                 debug(0, "FIN");
-                change_state(ST_FIN);
+                fin = 1;
                 break;
             case REL: // Y
                 qrm1(&qu, pkt.src);
@@ -103,7 +105,7 @@ void comm_th_xy() {
                 ++dack_count;
                 if (dack_count == cown - 1) {
                     if (!energy) {
-                        messenger = 1;
+                        wakeup_z();
                         SHM_SAFE(
                             shm_info_arr[rank].msg = '!';
                         )
@@ -136,7 +138,9 @@ void comm_th_z() {
     MPI_Status status;
     packet_t pkt;
 
-    while (state != ST_FIN) {
+    int fin = 0;
+
+    while (state != ST_FIN && !fin) {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         pthread_mutex_lock(&lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
@@ -159,6 +163,10 @@ void comm_th_z() {
             case MEM:
                 HAS_SHM = pkt.data;
                 pthread_mutex_unlock(&memlock);
+                break;
+            case FIN:
+                debug(0, "FIN");
+                fin = 1;
                 break;
         }
     }

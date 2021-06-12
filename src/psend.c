@@ -50,6 +50,6 @@ int sync_all_with_msg(MTYP mtyp, int data) {
     pkt.ts = lamport;
 
     for (int i = 0; i < size; i++) {
-        MPI_Send(&pkt, 1, PAK_T, i, MEM, MPI_COMM_WORLD);
+        MPI_Send(&pkt, 1, PAK_T, i, mtyp, MPI_COMM_WORLD);
     }
 }

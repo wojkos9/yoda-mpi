@@ -81,6 +81,11 @@ void release_z() {
         
 }
 
+void wakeup_z() {
+    debug(10, "\t\t\t*WAKING");
+    psend_to_typ_all(PT_Z, WAKE, 0);
+}
+
 void inc_ack() {
     ++ack_count;
     
@@ -104,10 +109,11 @@ void try_init_shm() {
         pthread_mutex_lock(&memlock);
         if (HAS_SHM) {
             init_shm();
+            debug(0, "HAS SHM: %d", HAS_SHM);
+            // if (!MEM_INIT) {
+            //     sync_all_with_msg(FIN, 0);
+            // }
         }
-
-        debug(0, "HAS SHM: %d", HAS_SHM);
-        
     }
 
 }
@@ -135,7 +141,7 @@ void set_pair(int new) {
 }
 
 void try_reserve_place() {
-    if (ack_count == cown) {
+    if (ack_count == cown - 1) {
         zero_ack();
         if (DEBUG_LVL >= 9) {
             col(printf("RESERVING +%d: ", offset), qprint(&qu));
@@ -169,10 +175,16 @@ void try_enter() { // X
             debug(9, "TO_CRIT");
             pthread_mutex_unlock(&mut); // -> ST_CRIT
 
-            debug(10, "-------DEC--------");
-            SHM_SAFE(
+            debug(1, "-------DEC--------");
+            SHM_SAFE2(
                 shm_common->en += 1;
                 shm_common->curr_energy -= 1;
+            )
+            if (shm_common->curr_energy  < 0) {
+                sync_all_with_msg(FIN, 0);
+            }
+
+            SHM_SAFE(
                 shm_info_arr[rank].en = energy;
             )
             
@@ -182,15 +194,14 @@ void try_enter() { // X
 }
 
 void start_order() {
-    zero_ack();
     change_state(ST_ORD);
-    if (cown > 1 || 1) {
-        pthread_mutex_lock(&lamut);
-        psend_to_typ_all(styp, PAR, lamport);
-        pthread_mutex_unlock(&lamut);
-    } else {
-        try_reserve_place();
-    }
+    // pthread_mutex_lock(&lamut);
+    int ts = lamport;
+    qput(&qu, ts, rank);
+    
+    zero_ack();
+    psend_to_typ(styp, PAR, ts);
+    // pthread_mutex_unlock(&lamut);
 }
 
 void start_enter_crit() {
@@ -234,13 +245,17 @@ void* main_th_xy(void *p) {
 
         if (styp == PT_X) {
             SHM_SAFE(
-                shm_info_arr[rank].msg = 0;
+                shm_info_arr[rank].msg = '#';
             )
             debug(15, "------TRY ENTER------");
             start_enter_crit(); // ST_PAIR
             pthread_mutex_lock(&mut);
             change_state(ST_CRIT);
             psend_to_typ(styp, DEC, 0); // ST_CRIT
+
+            SHM_SAFE(
+                shm_info_arr[rank].msg = 0;
+            )
             
             debug(15, "CRIT");
 
@@ -270,15 +285,6 @@ void* main_th_xy(void *p) {
         psend(pair, END);
         pthread_mutex_lock(&mut); // wait for END
         change_state(ST_LEAVE);
-
-        if (messenger) { // co jak nie dostal DACK ?
-            messenger = 0;
-            
-            debug(10, "\t\t\t*WAKING");
-            psend_to_typ_all(PT_Z, WAKE, 0);
-        }
-
-        
 
         set_place(-1);
         set_pair(-1);
@@ -318,11 +324,11 @@ void *main_th_z(void *p) {
         random_sleep(10);
 
         
-        SHM_SAFE(
+        SHM_SAFE2(
             shm_common->curr_energy += 1;
         )
 
-        debug(15, "+++++++++INC++++++++++");
+        debug(1, "+++++++++INC++++++++++");
         psend_to_typ_all(PT_X, INC, 0);
         change_state(ST_SLEEP);
     }
@@ -411,7 +417,8 @@ int main(int argc, char **argv)
 
    
 
-    pthread_join(th, NULL);
+    // pthread_join(th, NULL);
+    pthread_cancel(th);
 
     free(places);
     MPI_Finalize();
