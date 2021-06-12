@@ -40,23 +40,25 @@ void comm_th_xy() {
                     debug(15, "ACK <- %d", pkt.src);
                     inc_ack();
                     try_reserve_place();
-                } else if (state >= ST_WORK && styp == PT_Y) { // Y
+                } else if (styp == PT_X) {
+                    if (state == ST_PAIR) {
+                        inc_ack();
+                        try_enter();
+                    }
+                } else if (state >= ST_WORK) { // Y
                     inc_ack();
                     if (ack_count == cown - 1) {
                         pthread_mutex_unlock(&can_leave); // Y -> ST_IDLE
                     }
-                } else if (state == ST_PAIR) {
-                    inc_ack();
-                    try_enter();
                 }
                 
                 break;
             case REQ: // X
-                if (state != ST_PAIR) {
+                if (state != ST_PAIR && state != ST_CRIT) {
                     psend(pkt.src, ACK);
                 } else {
                     val_t req = {pkt.data, pkt.src};
-                    if (VAL_GT(req, own_req)) {
+                    if (VAL_GT(own_req, req)) {
                         psend(pkt.src, ACK);
                     } else {
                         qputv(&qu_x, req);
@@ -81,7 +83,7 @@ void comm_th_xy() {
                 }
                 break;
             case FIN: // never used unless internal fail
-                debug(0, "FIN");
+                debug(0, "FIN==========================================");
                 fin = 1;
                 break;
             case REL: // Y
@@ -103,6 +105,9 @@ void comm_th_xy() {
                 psend(pkt.src, DACK);
                 if (!energy) {
                     blocked = 1;
+                    SHM_SAFE(
+                        shm_info_arr[rank].x = 'B';
+                    )
                     // release_z();
                 }
                 break;
@@ -124,9 +129,20 @@ void comm_th_xy() {
                 )
                 if (energy == cz) {
                     blocked = 0;
+                    SHM_SAFE(
+                        shm_info_arr[rank].x = 'U';
+                    )
                     debug(10, "UNLOCK");
                     try_enter();
                 }
+                break;
+            case SHM_OK: // shm
+                ++ok_count;
+                debug(0, "OK %d", ok_count);
+                if (ok_count == size) {
+                    // pthread_mutex_unlock(&start_mut);
+                }
+                break;
         }
     }
 }
@@ -143,7 +159,7 @@ void comm_th_z() {
         lamport = MAX(lamport, pkt.ts) + 1;
         pthread_mutex_unlock(&lamut);
 
-        debug(10, "*ZREC %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
+        debug(10, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 
         switch (status.MPI_TAG) {
             case WAKE:
@@ -164,6 +180,12 @@ void comm_th_z() {
             case FIN:
                 debug(0, "FIN");
                 fin = 1;
+                break;
+            case SHM_OK: // shm
+                ++ok_count;
+                if (ok_count == size) {
+                    // pthread_mutex_unlock(&start_mut);
+                }
                 break;
         }
     }

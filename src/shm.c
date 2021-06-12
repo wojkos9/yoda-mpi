@@ -32,6 +32,10 @@ void init_sh_mutex(pthread_mutex_t *mut, int lock) {
 
 void init_shm() {
 
+    debug(-1, "INIT MEM");
+
+    int tries = 5;
+
     HAS_SHM = 1;
 
     int shm_size = sizeof(shm_common_t) + sizeof(shm_info_t) * size;
@@ -39,45 +43,55 @@ void init_shm() {
     if (rank != 0) {
         pthread_mutex_lock(&memlock);
     }
+    while (--tries) {
+        debug(-1, "CHECK 0");
+        int fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+        debug(-1, "CHECK 0.5");
+        if (fd < 0) goto shm_fail;
 
-    int fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    if (fd < 0) goto shm_fail;
+        debug(-1, "CHECK 1");
 
-    if (rank == 0) {
-        debug(0, "TRUNC FILE");
-        if (-1 == ftruncate(fd, shm_size)) goto shm_fail;
-        // close(fd);
-        // fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-        // if (fd < 0) goto shm_fail;
-    }
-
-    shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (shm_common == MAP_FAILED) goto shm_fail;
-
-    
-
-    MEM_INIT = 1;
-
-    shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
-
-    if (rank == 0) {
-        memset(shm_common, 0, shm_size);
-        shm_common->curr_energy = energy;
-        for (int i = 0; i < size; i++) {
-            shm_info_arr[i].en = energy;
+        if (rank == 0) {
+            debug(0, "TRUNC FILE");
+            if (-1 == ftruncate(fd, shm_size)) goto shm_fail;
+            // close(fd);
+            // fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+            // if (fd < 0) goto shm_fail;
         }
+
+        shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        if (shm_common == MAP_FAILED) goto shm_fail;
+
+        debug(-1, "CHECK 2");
+
+        MEM_INIT = 1;
+
+        shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
+
+        if (rank == 0) {
+            memset(shm_common, 0, shm_size);
+            shm_common->curr_energy = energy;
+            for (int i = 0; i < size; i++) {
+                shm_info_arr[i].en = energy;
+                shm_info_arr[i].y = '0';
+            }
+        }
+
+        init_sh_mutex(&shm_common->mut, 0);
+        msync(&shm_common, shm_size, MS_SYNC);
+
+        debug(-1, "CHECK 3");
+
+        break;
+
+        shm_fail:
+        debug(-1, "SHM FAIL");
+        HAS_SHM = 0;
+        MEM_INIT = 0;
+        if (rank != 0) sync_all_with_msg(FIN, 0);
+        usleep((1+rand()%9) * 100000);
+        debug(-1, "SHM RETRY &&&&&&");
     }
-
-    init_sh_mutex(&shm_common->mut, 0);
-    msync(&shm_common, shm_size, MS_SYNC);
-
-    goto shm_succ;
-
-    shm_fail:
-    debug(0, "SHM FAIL");
-    HAS_SHM = 0;
-    MEM_INIT = 0;
-    if (rank != 0) sync_all_with_msg(FIN, 0);
     shm_succ:
     if (rank == 0) sync_all_with_msg(MEM, HAS_SHM);
 }
