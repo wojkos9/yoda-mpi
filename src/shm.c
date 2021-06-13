@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "utils.h"
 
@@ -44,12 +45,8 @@ void init_shm() {
         pthread_mutex_lock(&memlock);
     }
     while (--tries) {
-        debug(-1, "CHECK 0");
         int fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-        debug(-1, "CHECK 0.5");
         if (fd < 0) goto shm_fail;
-
-        debug(-1, "CHECK 1");
 
         if (rank == 0) {
             debug(0, "TRUNC FILE");
@@ -62,15 +59,14 @@ void init_shm() {
         shm_common = mmap(NULL, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
         if (shm_common == MAP_FAILED) goto shm_fail;
 
-        debug(-1, "CHECK 2");
-
         MEM_INIT = 1;
 
         shm_info_arr = (void *)shm_common + sizeof(shm_common_t);
 
         if (rank == 0) {
-            memset(shm_common, 0, shm_size);
+            memset(shm_common, 0x20, shm_size);
             shm_common->curr_energy = energy;
+            shm_common->tot_en = 0;
             for (int i = 0; i < size; i++) {
                 shm_info_arr[i].en = energy;
                 shm_info_arr[i].y = '0';
@@ -79,8 +75,6 @@ void init_shm() {
 
         init_sh_mutex(&shm_common->mut, 0);
         msync(&shm_common, shm_size, MS_SYNC);
-
-        debug(-1, "CHECK 3");
 
         break;
 

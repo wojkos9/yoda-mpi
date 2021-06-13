@@ -19,8 +19,8 @@ typedef struct {
 } shm_info_t;
 
 typedef struct {
-    char en;
-    char curr_energy;
+    int tot_en;
+    int curr_energy;
     pthread_mutex_t mut;
 } shm_common_t;
 

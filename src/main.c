@@ -11,6 +11,7 @@
 
 #include <pthread.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "shm.h"
 
@@ -67,6 +68,9 @@ int dack_count = 0;
 
 int messenger = 0;
 
+char _tmp[16];
+#define shmprintn(field, n, i) snprintf(_tmp, n+1, "%*d", n, i % (int)1e##n), memcpy(shm_info_arr[rank].field, _tmp, n)
+
 void release_z() {
     int pid;
     int rel = 0;
@@ -83,10 +87,11 @@ void release_z() {
         
 }
 
+int tot_wake = 0;
 void wakeup_z() {
     debug(10, "\t\t\t*WAKING");
     SHM_SAFE(
-        shm_info_arr[rank].y += 1;
+        shm_info_arr[rank].y = ++tot_wake;
     )
     psend_to_typ_all(PT_Z, WAKE, 0);
 }
@@ -95,6 +100,9 @@ void try_leave() {
     if (dack_count == cown - 1) {
         if (!energy) {
             blocked = 1;
+            SHM_SAFE(
+                shm_info_arr[rank].x = 'B';
+            )
             wakeup_z();
             SHM_SAFE(
                 shm_info_arr[rank].msg = '!';
@@ -109,7 +117,7 @@ void inc_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = ack_count;
-        snprintf(shm_info_arr[rank].pad3, 3, "%d", ack_count % 1000);
+        shmprintn(pad3, 3, ack_count);
     )
 }
 
@@ -118,13 +126,13 @@ void zero_ack() {
     
     SHM_SAFE(
         // shm_info_arr[rank].ack = 0;
-        snprintf(shm_info_arr[rank].pad3, 3, "%d", ack_count  % 1000);
+        shmprintn(pad3, 3, ack_count);
     )
 }
 
 void try_init_shm() {
     if (HAS_SHM) {
-        pthread_mutex_lock(&memlock);
+        
         if (1) {
             init_shm();
             debug(0, "HAS SHM: %d", HAS_SHM);
@@ -144,7 +152,7 @@ void try_init_shm() {
 void set_place(int newplace) {
     place = newplace;
     SHM_SAFE(
-        snprintf(shm_info_arr[rank].pad4, 3, "%d", place % 1000);
+        shmprintn(pad4, 3, place);
     )
 }
 
@@ -186,7 +194,7 @@ void try_reserve_place() {
 void notify_enter() {
     ++enter_count;
     SHM_SAFE(
-        snprintf(shm_info_arr[rank].pad2, 3, "%d", enter_count % 1000);
+        shmprintn(pad2, 3, enter_count); 
     )
 }
 
@@ -203,7 +211,7 @@ void try_enter() { // X
 
             int err = 0;
             SHM_SAFE2(
-                shm_common->en += 1;
+                shm_common->tot_en += 1;
                 shm_common->curr_energy -= 1;
                 if (shm_common->curr_energy  < 0) {
                     err = 1;
@@ -263,11 +271,6 @@ void release_place() { // Y
 
 void* main_th_xy(void *p) {
     debug(20, "MAIN %d %d %d", rank, cown, copp)
-
-    pthread_mutex_lock(&can_leave);
-    pthread_mutex_lock(&start_mut);
-    pthread_mutex_lock(&pair_mut);
-    pthread_mutex_lock(&crit_mut);
 
     try_init_shm();
 
@@ -345,11 +348,7 @@ void* main_th_xy(void *p) {
 
 void *main_th_z(void *p) {
 
-    pthread_mutex_lock(&start_mut);
-
     try_init_shm();
-
-    
 
     while (state != ST_FIN) {
         pthread_mutex_lock(&mut);
@@ -445,6 +444,11 @@ int main(int argc, char **argv)
 
     // by default wait for unlock
     pthread_mutex_lock(&mut);
+    pthread_mutex_lock(&memlock);
+    pthread_mutex_lock(&can_leave);
+    pthread_mutex_lock(&start_mut);
+    pthread_mutex_lock(&pair_mut);
+    pthread_mutex_lock(&crit_mut);
 
     pthread_t th;
 

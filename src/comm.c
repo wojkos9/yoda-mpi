@@ -15,6 +15,7 @@ void comm_th_xy() {
     int fin = 0;
 
     while (state != ST_FIN && !fin) {
+        // val_t own_req2 = own_req;
         err = MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         // pthread_mutex_lock(&lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
