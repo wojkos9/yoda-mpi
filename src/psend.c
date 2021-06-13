@@ -14,7 +14,7 @@ int psend1(int dest, MTYP typ, int data) {
     pkt.data = data;
     // pthread_mutex_lock(&lamut);
     pkt.ts = ++lamport;
-    debug(20, "SEND %s to %d", mtyp_map[typ], dest);
+    debug(20, "SEND %s/%d to %d", mtyp_map[typ], data, dest);
     MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
     // pthread_mutex_unlock(&lamut);
     
@@ -43,7 +43,7 @@ int psend_to_typ(PTYP ptyp, MTYP mtyp, int data) {
 }
 
 int sync_all_with_msg(MTYP mtyp, int data) {
-    debug(20, "BCAST %s %d", mtyp_map[mtyp], data);
+    debug(20, "BCAST %s/%d", mtyp_map[mtyp], data);
     packet_t pkt;
     pkt.src = rank;
     pkt.data = data;

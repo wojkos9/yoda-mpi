@@ -15,6 +15,8 @@
 
 #include "shm.h"
 
+__thread int tid = 0;
+
 int base_time = 100000;
 
 int enter_count = 0;
@@ -101,7 +103,7 @@ void try_leave() {
         if (!energy) {
             blocked = 1;
             SHM_SAFE(
-                shm_info_arr[rank].x = 'B';
+                shm_info_arr[rank].x = SYMB_B;
             )
             wakeup_z();
             SHM_SAFE(
@@ -116,8 +118,8 @@ void inc_ack() {
     ++ack_count;
     
     SHM_SAFE(
-        // shm_info_arr[rank].ack = ack_count;
-        shmprintn(pad3, 3, ack_count);
+        shm_info_arr[rank].a = ack_count+'0';
+        // shmprintn(pad3, 3, ack_count);
     )
 }
 
@@ -125,8 +127,8 @@ void zero_ack() {
     ack_count = 0;
     
     SHM_SAFE(
-        // shm_info_arr[rank].ack = 0;
-        shmprintn(pad3, 3, ack_count);
+        shm_info_arr[rank].a = ack_count+'0';
+        // shmprintn(pad3, 3, ack_count);
     )
 }
 
@@ -223,7 +225,7 @@ void try_enter() { // X
             
 
             SHM_SAFE(
-                shm_info_arr[rank].en = energy;
+                shm_info_arr[rank].c = energy + '0';
             )
             
 
@@ -233,13 +235,13 @@ void try_enter() { // X
 
 void start_order() {
     change_state(ST_ORD);
-    // pthread_mutex_lock(&lamut);
+    pthread_mutex_lock(&lamut); // so that it doesn't respond to PAR in the meantime
     int ts = lamport;
     qput(&qu, ts, rank);
     
     zero_ack();
     psend_to_typ(styp, PAR, ts);
-    // pthread_mutex_unlock(&lamut);
+    pthread_mutex_unlock(&lamut);
 
     if (cown == 1) {
         try_reserve_place();
@@ -270,6 +272,7 @@ void release_place() { // Y
 }
 
 void* main_th_xy(void *p) {
+    tid = 1;
     debug(20, "MAIN %d %d %d", rank, cown, copp)
 
     try_init_shm();
@@ -277,6 +280,7 @@ void* main_th_xy(void *p) {
     while(state != ST_FIN) {
         start_order();
         pthread_mutex_lock(&pair_mut);
+        own_req.x = -1;
         change_state(ST_PAIR);
         debug(10, "PAIR %d @ %d", pair, place);
 
@@ -309,7 +313,7 @@ void* main_th_xy(void *p) {
             
         } else {
             pthread_mutex_lock(&start_mut); // Y wait for START
-            release_place();
+            
             change_state(ST_WORK);
             
         }
@@ -333,6 +337,9 @@ void* main_th_xy(void *p) {
 
         if (styp == PT_X) {
             release_z();
+        } else {
+            dack_count = 0;
+            release_place();
         }
 
         if (cown > 1) {
@@ -347,7 +354,7 @@ void* main_th_xy(void *p) {
 }
 
 void *main_th_z(void *p) {
-
+    tid = 1;
     try_init_shm();
 
     while (state != ST_FIN) {
@@ -438,7 +445,8 @@ int main(int argc, char **argv)
     opp_base = styp == PT_X ? cown : 0;
 
     // places received from opposite process type
-    places = malloc(sizeof(int) * copp);
+    places = malloc(sizeof(*places) * copp);
+    memset(places, NO_PLACE, sizeof(*places) * copp);
 
     debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
 

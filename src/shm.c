@@ -69,7 +69,9 @@ void init_shm() {
             shm_common->tot_en = 0;
             for (int i = 0; i < size; i++) {
                 shm_info_arr[i].en = energy;
-                shm_info_arr[i].y = '0';
+                shm_info_arr[i].y = 0;
+                shm_info_arr[i].x = SYMB_U;
+                shm_info_arr[i].b = 'e';
             }
         }
 

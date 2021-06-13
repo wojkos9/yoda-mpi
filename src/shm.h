@@ -13,7 +13,9 @@ typedef struct {
     char msg;
     char pad2[3];
     char x;
-    char pad3[3];
+    char a;
+    char b;
+    char c;
     char y;
     char pad4[3];
 } shm_info_t;
@@ -42,10 +44,14 @@ extern pthread_mutex_t memlock;
             op \
             }
 
+#if 1
 #define SHM_SAFE2(op) if (MEM_INIT) {\
             pthread_mutex_lock(&shm_common->mut); \
             op \
             pthread_mutex_unlock(&shm_common->mut); \
             }
+#else
+#define SHM_SAFE2 SHM_SAFE
+#endif
 
 #endif // __SHM_H__

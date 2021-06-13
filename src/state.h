@@ -10,7 +10,8 @@
 
 extern ST state;
 
-extern int size, rank, lamport, ack_count, dack_count, enter_count, ok_count;
+extern int size, rank, lamport, ack_count, dack_count, enter_count, ok_count, inc_count;
+extern __thread int tid;
 extern PTYP styp, otyp;
 extern int pair, place;
 extern val_t own_req;

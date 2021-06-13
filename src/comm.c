@@ -5,6 +5,8 @@
 #include "shm.h"
 #include "helpers.h"
 
+int inc_count = 0;
+
 void comm_th_xy() {
 
     MPI_Status status;
@@ -17,9 +19,9 @@ void comm_th_xy() {
     while (state != ST_FIN && !fin) {
         // val_t own_req2 = own_req;
         err = MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        // pthread_mutex_lock(&lamut);
+        if (status.MPI_TAG == PAR) pthread_mutex_lock(&lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
-        // pthread_mutex_unlock(&lamut);
+       
 
         if (err != MPI_SUCCESS) {
             debug(0, "RECV ERROR %d", err);
@@ -35,6 +37,7 @@ void comm_th_xy() {
                     col(printf("ACKING "), qprint(&qu));
                 }
                 psend(pkt.src, ACK);
+                pthread_mutex_unlock(&lamut);
                 break;
             case ACK:
                 if (state == ST_ORD) {
@@ -46,16 +49,11 @@ void comm_th_xy() {
                         inc_ack();
                         try_enter();
                     }
-                } else if (state >= ST_WORK) { // Y
-                    inc_ack();
-                    if (ack_count == cown - 1) {
-                        pthread_mutex_unlock(&can_leave); // Y -> ST_IDLE
-                    }
                 }
                 
                 break;
             case REQ: // X
-                if (state != ST_PAIR && state != ST_CRIT) {
+                if (own_req.x == -1 || state != ST_PAIR && state != ST_CRIT) {
                     psend(pkt.src, ACK);
                 } else {
                     val_t req = {pkt.data, pkt.src};
@@ -90,7 +88,7 @@ void comm_th_xy() {
             case REL: // Y
                 qrm1(&qu, pkt.src);
                 offset += 1;
-                psend(pkt.src, ACK);
+                psend(pkt.src, DACK);
                 break;
             case MEM: // shm
                 HAS_SHM = pkt.data;
@@ -99,7 +97,7 @@ void comm_th_xy() {
             case DEC: // X
                 --energy;
                 SHM_SAFE(
-                    shm_info_arr[rank].en = energy;
+                    shm_info_arr[rank].c = energy + '0';
                 )
                 qrm1(&qu, pkt.src);
                 offset += 1;
@@ -107,14 +105,20 @@ void comm_th_xy() {
                 if (!energy) {
                     blocked = 1;
                     SHM_SAFE(
-                        shm_info_arr[rank].x = 'B';
+                        shm_info_arr[rank].x = SYMB_B;
                     )
                     // release_z();
                 }
                 break;
             case DACK: // X
                 ++dack_count;
-                try_leave();
+                if (styp == PT_X) {
+                    try_leave();
+                } else {
+                    if (dack_count == cown - 1) {
+                        pthread_mutex_unlock(&can_leave); // Y -> ST_IDLE
+                    }
+                }
                 break;
             case END:
                 pthread_mutex_unlock(&mut); // -> ST_LEAVE
@@ -125,13 +129,15 @@ void comm_th_xy() {
                 break;
             case INC: // X
                 ++energy;
+                ++inc_count;
                 SHM_SAFE(
-                    shm_info_arr[rank].en = energy;
+                    shm_info_arr[rank].c = energy + '0';
                 )
-                if (energy == cz) {
+                if (inc_count == cz) {
+                    inc_count = 0;
                     blocked = 0;
                     SHM_SAFE(
-                        shm_info_arr[rank].x = 'U';
+                        shm_info_arr[rank].x = SYMB_U;
                     )
                     debug(10, "UNLOCK");
                     try_enter();
