@@ -42,7 +42,7 @@ void init_shm() {
     int shm_size = sizeof(shm_common_t) + sizeof(shm_info_t) * size;
 
     if (rank != 0) {
-        pthread_mutex_lock(&memlock);
+        mut_lock(memlock);
     }
     while (--tries) {
         int fd = shm_open(SHM_PATH, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);

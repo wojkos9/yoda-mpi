@@ -37,9 +37,9 @@ extern int HAS_SHM, MEM_INIT;
 extern pthread_mutex_t memlock;
 
 // #define SHM_SAFE(op) if (MEM_INIT) {\
-//             pthread_mutex_lock(&shm_common->mut); \
+//             mut_lock(shm_common->mut); \
 //             op \
-//             pthread_mutex_unlock(&shm_common->mut); \
+//             mut_unlock(shm_common->mut); \
 //             }
 
 #define SHM_SAFE(op) if (MEM_INIT) {\
@@ -48,9 +48,9 @@ extern pthread_mutex_t memlock;
 
 #if 1
 #define SHM_SAFE2(op) if (MEM_INIT) {\
-            pthread_mutex_lock(&shm_common->mut); \
+            mut_lock(shm_common->mut); \
             op \
-            pthread_mutex_unlock(&shm_common->mut); \
+            mut_unlock(shm_common->mut); \
             }
 #else
 #define SHM_SAFE2 SHM_SAFE

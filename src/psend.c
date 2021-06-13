@@ -12,11 +12,11 @@ int psend1(int dest, MTYP typ, int data) {
     packet_t pkt;
     pkt.src = rank;
     pkt.data = data;
-    // pthread_mutex_lock(&lamut);
+    // mut_lock(lamut);
     pkt.ts = ++lamport;
     debug(20, "SEND %s/%d to %d", mtyp_map[typ], data, dest);
     MPI_Send(&pkt, 1, PAK_T, dest, typ, MPI_COMM_WORLD);
-    // pthread_mutex_unlock(&lamut);
+    // mut_unlock(lamut);
     
 }
 

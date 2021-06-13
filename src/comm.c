@@ -19,7 +19,7 @@ void comm_th_xy() {
     while (state != ST_FIN && !fin) {
         // val_t own_req2 = own_req;
         err = MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        if (status.MPI_TAG == PAR) pthread_mutex_lock(&lamut);
+        if (status.MPI_TAG == PAR) mut_lock(lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
        
 
@@ -37,7 +37,7 @@ void comm_th_xy() {
                     col(printf("ACKING "), qprint(&qu));
                 }
                 psend(pkt.src, ACK);
-                pthread_mutex_unlock(&lamut);
+                mut_unlock(lamut);
                 break;
             case ACK:
                 if (state == ST_ORD) {
@@ -78,7 +78,7 @@ void comm_th_xy() {
                 places[i] = pkt.data;
                 if (state == ST_AWAIT && pkt.data == place) {
                     set_pair(pkt.src);
-                    pthread_mutex_unlock(&pair_mut); // -> ST_PAIR
+                    mut_unlock(pair_mut); // -> ST_PAIR
                 }
                 break;
             case FIN: // never used unless internal fail
@@ -92,7 +92,7 @@ void comm_th_xy() {
                 break;
             case MEM: // shm
                 HAS_SHM = pkt.data;
-                pthread_mutex_unlock(&memlock);
+                mut_unlock(memlock);
                 break;
             case DEC: // X
                 --energy;
@@ -116,16 +116,16 @@ void comm_th_xy() {
                     try_leave();
                 } else {
                     if (dack_count == cown - 1) {
-                        pthread_mutex_unlock(&can_leave); // Y -> ST_IDLE
+                        mut_unlock(can_leave); // Y -> ST_IDLE
                     }
                 }
                 break;
             case END:
-                pthread_mutex_unlock(&mut); // -> ST_LEAVE
+                mut_unlock(mut); // -> ST_LEAVE
                 break;
             case STA: // Y
                 set_pair(pkt.src);
-                pthread_mutex_unlock(&start_mut); // Y -> ST_CRIT
+                mut_unlock(start_mut); // Y -> ST_CRIT
                 break;
             case INC: // X
                 ++energy;
@@ -147,7 +147,7 @@ void comm_th_xy() {
                 ++ok_count;
                 debug(0, "OK %d", ok_count);
                 if (ok_count == size) {
-                    // pthread_mutex_unlock(&start_mut);
+                    // mut_unlock(start_mut);
                 }
                 break;
         }
@@ -162,27 +162,27 @@ void comm_th_z() {
 
     while (state != ST_FIN && !fin) {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        pthread_mutex_lock(&lamut);
+        mut_lock(lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
-        pthread_mutex_unlock(&lamut);
+        mut_unlock(lamut);
 
         debug(10, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 
         switch (status.MPI_TAG) {
             case WAKE:
                 if (state == ST_SLEEP) {
-                    pthread_mutex_unlock(&mut);
+                    mut_unlock(mut);
                 }
                 break;
             case ACK:
                 inc_ack();
                 if (ack_count == cx && state == ST_AWAIT) {
-                    pthread_mutex_unlock(&start_mut);
+                    mut_unlock(start_mut);
                 }
                 break;
             case MEM:
                 HAS_SHM = pkt.data;
-                pthread_mutex_unlock(&memlock);
+                mut_unlock(memlock);
                 break;
             case FIN:
                 debug(0, "FIN");
@@ -191,7 +191,7 @@ void comm_th_z() {
             case SHM_OK: // shm
                 ++ok_count;
                 if (ok_count == size) {
-                    // pthread_mutex_unlock(&start_mut);
+                    // mut_unlock(start_mut);
                 }
                 break;
         }

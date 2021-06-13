@@ -19,7 +19,7 @@
 /* printf colored based on rank */
 #define colbeg printf("%c[%d;%dm [tid %d ts %d]: ", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport)
 #define colend printf("%c[%d;%dm\n", 27, 0, 37)
-#define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d st %c b %d a %d E %d R %d] %c: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, state_map[state][0], blocked, ack_count, energy, own_req.x, "CW"[tid], ##__VA_ARGS__, 27, 0, 37);
+#define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d st %c b %d a %d E %d R %d] %c: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, state_map[state][0], blocked, ack_count, energy, own_req.x, "CW"[tid], ##__VA_ARGS__, 27, 0, 37)
 
 #define col(...) colbeg, __VA_ARGS__, colend
 
@@ -32,5 +32,15 @@ extern int DEBUG_LVL;
 #define SYMB_B '|'
 #define SYMB_U '.'
 #define NO_PLACE -2
+
+
+#if 1
+static int _merr;
+#define mut_lock(mut) {println("LOCKMUT " #mut); _merr = pthread_mutex_lock(&mut); if (_merr) println("LOCK ERROR %d", _merr);}
+#define mut_unlock(mut) println("ULOCKMUT " #mut), pthread_mutex_unlock(&mut)
+#else
+#define mut_lock(mut) pthread_mutex_lock(&mut)
+#define mut_unlock(mut) pthread_mutex_unlock(&mut)
+#endif
 
 #endif // UTILS_H_

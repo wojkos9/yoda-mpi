@@ -110,7 +110,7 @@ void try_leave() {
                 shm_info_arr[rank].msg = '!';
             )
         }
-        pthread_mutex_unlock(&can_leave); // X -> ST_IDLE
+        mut_unlock(can_leave); // X -> ST_IDLE
     }
 }
 
@@ -140,7 +140,7 @@ void try_init_shm() {
             debug(0, "HAS SHM: %d", HAS_SHM);
 
             // sync_all_with_msg(SHM_OK, 0);
-            // pthread_mutex_lock(&start_mut);
+            // mut_lock(start_mut);
 
             
             // if (!MEM_INIT) {
@@ -187,7 +187,7 @@ void try_reserve_place() {
         for(int i = 0; i < copp; i++) {
             if (places[i] == place) {
                 set_pair(i + opp_base);
-                pthread_mutex_unlock(&pair_mut); // -> ST_PAIR
+                mut_unlock(pair_mut); // -> ST_PAIR
             }
         }
     }
@@ -215,7 +215,7 @@ void try_enter() { // X
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
-            pthread_mutex_unlock(&crit_mut); // -> ST_CRIT
+            mut_unlock(crit_mut); // -> ST_CRIT
 
             debug(1, "-------DEC--------");
 
@@ -240,16 +240,17 @@ void try_enter() { // X
         }
     }
 }
-
 void start_order() {
     change_state(ST_ORD);
-    pthread_mutex_lock(&lamut); // so that it doesn't respond to PAR in the meantime
+    mut_lock(lamut); // so that it doesn't respond to PAR in the meantime
     int ts = lamport;
     qput(&qu, ts, rank);
+
+    
     
     zero_ack();
     psend_to_typ(styp, PAR, ts);
-    pthread_mutex_unlock(&lamut);
+    mut_unlock(lamut);
 
     if (cown == 1) {
         try_reserve_place();
@@ -259,13 +260,13 @@ void start_order() {
 void start_enter_crit() { // X
     dack_count = 0;
 
-    // pthread_mutex_lock(&lamut);
+    // mut_lock(lamut);
     own_req.x = lamport;
     
     change_state(ST_PAIR);
 
     psend_to_typ(styp, REQ, own_req.x);
-    // pthread_mutex_unlock(&lamut);
+    // mut_unlock(lamut);
 
     if (cown == 1) {
         try_enter();
@@ -275,7 +276,7 @@ void start_enter_crit() { // X
 
 void release_place() { // Y
     if (cown == 1) {
-        pthread_mutex_unlock(&can_leave);
+        mut_unlock(can_leave);
     } else {
         psend_to_typ(styp, REL, 0);
     }
@@ -290,7 +291,7 @@ void* main_th_xy(void *p) {
 
     while(state != ST_FIN) {
         start_order();
-        pthread_mutex_lock(&pair_mut);
+        mut_lock(pair_mut);
         own_req.x = -1;
         
         debug(10, "PAIR %d @ %d", pair, place);
@@ -302,7 +303,7 @@ void* main_th_xy(void *p) {
             debug(15, "------START ENTER------");
             start_enter_crit(); // ST_PAIR
             
-            pthread_mutex_lock(&crit_mut);
+            mut_lock(crit_mut);
             change_state(ST_CRIT);
 
             debug(15, "CRIT");
@@ -325,7 +326,7 @@ void* main_th_xy(void *p) {
             
         } else {
             change_state(ST_PAIR);
-            pthread_mutex_lock(&start_mut); // Y wait for START
+            mut_lock(start_mut); // Y wait for START
             
             change_state(ST_WORK);
             
@@ -342,7 +343,7 @@ void* main_th_xy(void *p) {
         debug(15, "END %d", pair);
 
         psend(pair, END);
-        pthread_mutex_lock(&mut); // wait for END
+        mut_lock(mut); // wait for END
         change_state(ST_LEAVE);
 
         set_place(-1);
@@ -359,7 +360,7 @@ void* main_th_xy(void *p) {
         }
 
         if (cown > 1) {
-            pthread_mutex_lock(&can_leave);
+            mut_lock(can_leave);
         }
         
 
@@ -374,13 +375,13 @@ void *main_th_z(void *p) {
     try_init_shm();
 
     while (state != ST_FIN) {
-        pthread_mutex_lock(&mut);
+        mut_lock(mut);
         change_state(ST_AWAIT);
 
         zero_ack();
         psend_to_typ_all(PT_X, ZREQ, 0);
 
-        pthread_mutex_lock(&start_mut);
+        mut_lock(start_mut);
         change_state(ST_ZCRIT);
 
         // int err = 0;
@@ -483,12 +484,12 @@ int main(int argc, char **argv)
     debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
 
     // by default wait for unlock
-    pthread_mutex_lock(&mut);
-    pthread_mutex_lock(&memlock);
-    pthread_mutex_lock(&can_leave);
-    pthread_mutex_lock(&start_mut);
-    pthread_mutex_lock(&pair_mut);
-    pthread_mutex_lock(&crit_mut);
+    mut_lock(mut);
+    mut_lock(memlock);
+    mut_lock(can_leave);
+    mut_lock(start_mut);
+    mut_lock(pair_mut);
+    mut_lock(crit_mut);
 
     pthread_t th;
 
