@@ -43,7 +43,7 @@ int psend_to_typ(PTYP ptyp, MTYP mtyp, int data) {
 }
 
 int sync_all_with_msg(MTYP mtyp, int data) {
-    debug(20, "BCAST %s/%d", mtyp_map[mtyp], data);
+    debug(20, "SEND %s/%d to all", mtyp_map[mtyp], data);
     packet_t pkt;
     pkt.src = rank;
     pkt.data = data;

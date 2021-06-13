@@ -206,12 +206,12 @@ void try_enter() { // X
         if (!blocked) {
             int err = 0;
 
-            SHM_SAFE2(
-                shm_common->x_crit += 1;
-                if (shm_common->z_crit) {
-                    err = 2;
-                }
-            )
+            // SHM_SAFE2(
+            //     shm_common->x_crit += 1;
+            //     if (shm_common->z_crit) {
+            //         err = 2;
+            //     }
+            // )
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
@@ -261,6 +261,9 @@ void start_enter_crit() { // X
 
     // pthread_mutex_lock(&lamut);
     own_req.x = lamport;
+    
+    change_state(ST_PAIR);
+
     psend_to_typ(styp, REQ, own_req.x);
     // pthread_mutex_unlock(&lamut);
 
@@ -289,7 +292,7 @@ void* main_th_xy(void *p) {
         start_order();
         pthread_mutex_lock(&pair_mut);
         own_req.x = -1;
-        change_state(ST_PAIR);
+        
         debug(10, "PAIR %d @ %d", pair, place);
 
         if (styp == PT_X) {
@@ -298,6 +301,7 @@ void* main_th_xy(void *p) {
             )
             debug(15, "------START ENTER------");
             start_enter_crit(); // ST_PAIR
+            
             pthread_mutex_lock(&crit_mut);
             change_state(ST_CRIT);
 
@@ -320,6 +324,7 @@ void* main_th_xy(void *p) {
             psend(pair, STA); // send START to Y
             
         } else {
+            change_state(ST_PAIR);
             pthread_mutex_lock(&start_mut); // Y wait for START
             
             change_state(ST_WORK);
@@ -344,9 +349,9 @@ void* main_th_xy(void *p) {
         set_pair(-1);
 
         if (styp == PT_X) {
-            SHM_SAFE2(
-                shm_common->x_crit -= 1;
-            )
+            // SHM_SAFE2(
+            //     shm_common->x_crit -= 1;
+            // )
             release_z();
         } else {
             dack_count = 0;
@@ -377,18 +382,18 @@ void *main_th_z(void *p) {
 
         pthread_mutex_lock(&start_mut);
         change_state(ST_ZCRIT);
-        
-        int err = 0;
-        SHM_SAFE2(
-            shm_common->z_crit += 1;
-            if (shm_common->x_crit > 0) {
-                err = 2;
-            }
-        )
 
-        if (err) {
-            sync_all_with_msg(FIN, err);
-        }
+        // int err = 0;
+        // SHM_SAFE2(
+        //     shm_common->z_crit += 1;
+        //     if (shm_common->x_crit > 0) {
+        //         err = 2;
+        //     }
+        // )
+
+        // if (err) {
+        //     sync_all_with_msg(FIN, err);
+        // }
 
         notify_enter();
 
@@ -399,9 +404,9 @@ void *main_th_z(void *p) {
             shm_common->curr_energy += 1;
         )
 
-        SHM_SAFE2(
-            shm_common->z_crit -= 1;
-        )
+        // SHM_SAFE2(
+        //     shm_common->z_crit -= 1;
+        // )
 
         debug(1, "+++++++++INC++++++++++");
         psend_to_typ_all(PT_X, INC, 0);
