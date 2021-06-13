@@ -22,7 +22,9 @@ typedef struct {
 
 typedef struct {
     int tot_en;
-    int curr_energy;
+    short curr_energy;
+    char x_crit;
+    char z_crit;
     pthread_mutex_t mut;
 } shm_common_t;
 

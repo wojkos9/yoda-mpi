@@ -204,6 +204,14 @@ void try_enter() { // X
     debug(10, "////// TRY ENTER \\\\\\\\\\\\");
     if (state == ST_PAIR && ack_count >= cown - energy) {
         if (!blocked) {
+            int err = 0;
+
+            SHM_SAFE2(
+                shm_common->x_crit += 1;
+                if (shm_common->z_crit) {
+                    err = 2;
+                }
+            )
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
@@ -211,7 +219,7 @@ void try_enter() { // X
 
             debug(1, "-------DEC--------");
 
-            int err = 0;
+            
             SHM_SAFE2(
                 shm_common->tot_en += 1;
                 shm_common->curr_energy -= 1;
@@ -220,7 +228,7 @@ void try_enter() { // X
                 }
             )
             if (err) {
-                sync_all_with_msg(FIN, 0);
+                sync_all_with_msg(FIN, err);
             }
             
 
@@ -336,6 +344,9 @@ void* main_th_xy(void *p) {
         set_pair(-1);
 
         if (styp == PT_X) {
+            SHM_SAFE2(
+                shm_common->x_crit -= 1;
+            )
             release_z();
         } else {
             dack_count = 0;
@@ -366,6 +377,18 @@ void *main_th_z(void *p) {
 
         pthread_mutex_lock(&start_mut);
         change_state(ST_ZCRIT);
+        
+        int err = 0;
+        SHM_SAFE2(
+            shm_common->z_crit += 1;
+            if (shm_common->x_crit > 0) {
+                err = 2;
+            }
+        )
+
+        if (err) {
+            sync_all_with_msg(FIN, err);
+        }
 
         notify_enter();
 
@@ -374,6 +397,10 @@ void *main_th_z(void *p) {
         
         SHM_SAFE2(
             shm_common->curr_energy += 1;
+        )
+
+        SHM_SAFE2(
+            shm_common->z_crit -= 1;
         )
 
         debug(1, "+++++++++INC++++++++++");

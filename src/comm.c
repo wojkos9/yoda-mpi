@@ -65,7 +65,7 @@ void comm_th_xy() {
                 }
                 break;
             case ZREQ:
-                if ((state != ST_CRIT) || blocked)
+                if ((state != ST_CRIT && state != ST_WORK))// || blocked)
                 {
                     psend(pkt.src, ACK);
                 } else {

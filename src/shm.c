@@ -67,6 +67,8 @@ void init_shm() {
             memset(shm_common, 0x20, shm_size);
             shm_common->curr_energy = energy;
             shm_common->tot_en = 0;
+            shm_common->x_crit = 0;
+            shm_common->z_crit = 0;
             for (int i = 0; i < size; i++) {
                 shm_info_arr[i].en = energy;
                 shm_info_arr[i].y = 0;
