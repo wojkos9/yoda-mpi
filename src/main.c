@@ -285,7 +285,7 @@ void release_place() { // Y
 
 void* main_th_xy(void *p) {
     tid = 1;
-    debug(20, "MAIN %d %d %d", rank, cown, copp)
+    debug(20, "MAIN %d %d %d", rank, cown, copp);
 
     try_init_shm();
 

@@ -25,7 +25,7 @@
 
 extern int DEBUG_LVL;
 
-#define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__);
+#define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__)
 
 #define MAX(a, b) ((a)>(b)?(a):(b))
 
@@ -36,8 +36,8 @@ extern int DEBUG_LVL;
 
 #if 1
 static int _merr;
-#define mut_lock(mut) {println("LOCKMUT " #mut); _merr = pthread_mutex_lock(&mut); if (_merr) println("LOCK ERROR %d", _merr);}
-#define mut_unlock(mut) println("ULOCKMUT " #mut), pthread_mutex_unlock(&mut)
+#define mut_lock(mut) {debug(30, "LOCKMUT " #mut); _merr = pthread_mutex_lock(&mut); if (_merr) println("LOCK ERROR %d", _merr);}
+#define mut_unlock(mut) {debug(30, "ULOCKMUT " #mut); pthread_mutex_unlock(&mut);}
 #else
 #define mut_lock(mut) pthread_mutex_lock(&mut)
 #define mut_unlock(mut) pthread_mutex_unlock(&mut)
