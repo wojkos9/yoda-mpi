@@ -16,6 +16,8 @@
 
 #include "shm.h"
 
+#define ERR_XZ_EXCL 2
+
 __thread int tid = 0;
 
 int base_time = 100000;
@@ -64,6 +66,9 @@ lamut,
 can_leave,
 crit_mut;
 
+pthread_mutex_t binmut = PTHREAD_MUTEX_INITIALIZER;
+int binsem = 0;
+
 // pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 // pthread_mutex_t crit_mut = PTHREAD_MUTEX_INITIALIZER;
 // pthread_mutex_t start_mut = PTHREAD_MUTEX_INITIALIZER;
@@ -99,7 +104,7 @@ void release_z() {
 
 void block() {
     blocked = 1;
-    release_z();
+    // release_z();
     SHM_SAFE(
         shm_info_arr[rank].x = SYMB_B;
     )
@@ -134,7 +139,7 @@ void wakeup_z() {
 void try_leave() {
     if (dack_count == cown - 1) {
         if (!energy) {
-            // block();
+            block();
 
             wakeup_z();
             SHM_SAFE(
@@ -240,12 +245,12 @@ void try_enter() { // X
             zero_ack();
             int err = 0;
 
-            // SHM_SAFE2(
-            //     shm_common->x_crit += 1;
-            //     if (shm_common->z_crit) {
-            //         err = 2;
-            //     }
-            // )
+            SHM_SAFE2(
+                shm_common->x_crit += 1;
+                if (shm_common->z_crit) {
+                    err = ERR_XZ_EXCL;
+                }
+            )
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
@@ -293,9 +298,6 @@ void start_order() {
 
 void start_enter_crit() { // X
     dack_count = 0;
-
-    // new REQ will definitely have a higher clock than those
-    release_queue();
 
     // mut_lock(lamut);
     own_req.x = lamport;
@@ -383,9 +385,9 @@ void* main_th_xy(void *p) {
         set_pair(-1);
 
         if (styp == PT_X) {
-            // SHM_SAFE2(
-            //     shm_common->x_crit -= 1;
-            // )
+            SHM_SAFE2(
+                shm_common->x_crit -= 1;
+            )
             release_z();
         } else {
             dack_count = 0;
@@ -408,7 +410,9 @@ void *main_th_z(void *p) {
     try_init_shm();
 
     while (state != ST_FIN) {
+        binsem = 0;
         mut_lock(mut);
+        
         change_state(ST_AWAIT);
 
         zero_ack();
@@ -417,17 +421,17 @@ void *main_th_z(void *p) {
         mut_lock(start_mut);
         change_state(ST_ZCRIT);
 
-        // int err = 0;
-        // SHM_SAFE2(
-        //     shm_common->z_crit += 1;
-        //     if (shm_common->x_crit > 0) {
-        //         err = 2;
-        //     }
-        // )
+        int err = 0;
+        SHM_SAFE2(
+            shm_common->z_crit += 1;
+            if (shm_common->x_crit > 0) {
+                err = ERR_XZ_EXCL;
+            }
+        )
 
-        // if (err) {
-        //     sync_all_with_msg(FIN, err);
-        // }
+        if (err) {
+            sync_all_with_msg(FIN, err);
+        }
 
         notify_enter();
 
@@ -438,9 +442,9 @@ void *main_th_z(void *p) {
             shm_common->curr_energy += 1;
         )
 
-        // SHM_SAFE2(
-        //     shm_common->z_crit -= 1;
-        // )
+        SHM_SAFE2(
+            shm_common->z_crit -= 1;
+        )
 
         debug(1, "+++++++++INC++++++++++");
         change_state(ST_SLEEP);

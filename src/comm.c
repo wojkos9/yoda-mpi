@@ -156,16 +156,19 @@ void comm_th_z() {
 
     while (state != ST_FIN && !fin) {
         MPI_Recv( &pkt, 1, PAK_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        mut_lock(lamut);
         lamport = MAX(lamport, pkt.ts) + 1;
-        mut_unlock(lamut);
 
         debug(10, "RECV %s/%d from %d", mtyp_map[status.MPI_TAG], pkt.data, pkt.src);
 
         switch (status.MPI_TAG) {
             case WAKE:
                 if (state == ST_SLEEP) {
-                    mut_unlock(mut);
+                    pthread_mutex_lock(&binmut);
+                    if (binsem == 0) {
+                        mut_unlock(mut);
+                        binsem = 1;
+                    }
+                    pthread_mutex_unlock(&binmut);
                 }
                 break;
             case ACK:

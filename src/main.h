@@ -44,6 +44,8 @@ start_mut,
 pair_mut,
 lamut,
 can_leave;
+extern pthread_mutex_t binmut;
+extern int binsem;
 
 extern int *places;
 extern queue_t qu, qu_x, qu_z;
