@@ -103,10 +103,7 @@ void comm_th_xy() {
                 offset += 1;
                 psend(pkt.src, DACK);
                 if (!energy) {
-                    blocked = 1;
-                    SHM_SAFE(
-                        shm_info_arr[rank].x = SYMB_B;
-                    )
+                    block();
                     // release_z();
                 }
                 break;
@@ -135,11 +132,8 @@ void comm_th_xy() {
                 )
                 if (inc_count == cz) {
                     inc_count = 0;
-                    blocked = 0;
-                    SHM_SAFE(
-                        shm_info_arr[rank].x = SYMB_U;
-                    )
-                    debug(10, "UNLOCK");
+                    unblock();
+                    
                     try_enter();
                 }
                 break;

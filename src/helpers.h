@@ -10,6 +10,8 @@ extern void try_reserve_place();
 extern void try_enter();
 extern void wakeup_z();
 extern void try_leave();
+extern void block();
+extern void unblock();
 extern void set_pair(int newpair);
 
 #endif // __HELPERS_H__

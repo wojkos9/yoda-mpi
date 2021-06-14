@@ -97,6 +97,31 @@ void release_z() {
         
 }
 
+void block() {
+    blocked = 1;
+    release_z();
+    SHM_SAFE(
+        shm_info_arr[rank].x = SYMB_B;
+    )
+    debug(10, "BLOCK");
+}
+
+void unblock() {
+    blocked = 0;
+    
+    SHM_SAFE(
+        shm_info_arr[rank].x = SYMB_U;
+    )
+    debug(10, "UNBLOCK");
+}
+
+void release_queue() {
+    int pid;
+    while ((pid = qpop(&qu_x)) != -1) {
+        psend(pid, ACK);
+    }
+}
+
 int tot_wake = 0;
 void wakeup_z() {
     debug(10, "\t\t\t*WAKING");
@@ -109,10 +134,8 @@ void wakeup_z() {
 void try_leave() {
     if (dack_count == cown - 1) {
         if (!energy) {
-            blocked = 1;
-            SHM_SAFE(
-                shm_info_arr[rank].x = SYMB_B;
-            )
+            // block();
+
             wakeup_z();
             SHM_SAFE(
                 shm_info_arr[rank].msg = '!';
@@ -214,6 +237,7 @@ void try_enter() { // X
     debug(10, "////// TRY ENTER \\\\\\\\\\\\");
     if (state == ST_PAIR && ack_count >= cown - energy) {
         if (!blocked) {
+            zero_ack();
             int err = 0;
 
             // SHM_SAFE2(
@@ -269,6 +293,9 @@ void start_order() {
 
 void start_enter_crit() { // X
     dack_count = 0;
+
+    // new REQ will definitely have a higher clock than those
+    release_queue();
 
     // mut_lock(lamut);
     own_req.x = lamport;
@@ -327,11 +354,8 @@ void* main_th_xy(void *p) {
             change_state(ST_WORK);
 
             // release queued X
-            int pid;
-            while ((pid = qpop(&qu_x)) != -1) {
-                psend(pid, ACK);
-            }
-            
+            release_queue();
+
             psend(pair, STA); // send START to Y
             
         } else {
@@ -342,9 +366,8 @@ void* main_th_xy(void *p) {
             
         }
 
+        // shm
         notify_enter();
-
-        
 
         debug(15, "START %d", pair);
 
@@ -420,8 +443,9 @@ void *main_th_z(void *p) {
         // )
 
         debug(1, "+++++++++INC++++++++++");
-        psend_to_typ_all(PT_X, INC, 0);
         change_state(ST_SLEEP);
+        psend_to_typ_all(PT_X, INC, 0);
+        
     }
     return 0;
 }
