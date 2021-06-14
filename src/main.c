@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <string.h>
+#include <semaphore.h>
 
 #include "shm.h"
 
@@ -56,12 +57,19 @@ queue_t qu = QUEUE_INIT;
 queue_t qu_x = QUEUE_INIT;
 queue_t qu_z = QUEUE_INIT;
 
-pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t crit_mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t start_mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t pair_mut = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t can_leave = PTHREAD_MUTEX_INITIALIZER;
+sem_t mut,
+start_mut,
+pair_mut,
+lamut,
+can_leave,
+crit_mut;
+
+// pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t crit_mut = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t start_mut = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t pair_mut = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t lamut = PTHREAD_MUTEX_INITIALIZER;
+// pthread_mutex_t can_leave = PTHREAD_MUTEX_INITIALIZER;
 
 int blocked = 0;
 int energy = 5;
@@ -184,10 +192,12 @@ void try_reserve_place() {
         change_state(ST_AWAIT);
         debug(9, "PLACE %d", place);
         psend_to_typ(otyp, ORD, place);
-        for(int i = 0; i < copp; i++) {
-            if (places[i] == place) {
-                set_pair(i + opp_base);
-                mut_unlock(pair_mut); // -> ST_PAIR
+        if (pair == -1) {
+            for(int i = 0; i < copp; i++) {
+                if (places[i] == place) {
+                    set_pair(i + opp_base);
+                    mut_unlock(pair_mut); // -> ST_PAIR
+                }
             }
         }
     }
@@ -484,12 +494,13 @@ int main(int argc, char **argv)
     debug(30, "Hello %d %d %d %d %d %c -> %c", argc, size, cx, cy, cz, "XYZ"[styp], "XYZ"[otyp]);
 
     // by default wait for unlock
-    mut_lock(mut);
-    mut_lock(memlock);
-    mut_lock(can_leave);
-    mut_lock(start_mut);
-    mut_lock(pair_mut);
-    mut_lock(crit_mut);
+    mut_init(mut);
+    mut_init(memlock);
+    mut_init(can_leave);
+    mut_init(start_mut);
+    mut_init(pair_mut);
+    mut_init(crit_mut);
+    mut_init2(lamut, 1);
 
     pthread_t th;
 

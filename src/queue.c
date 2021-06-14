@@ -17,12 +17,12 @@ int qputv(queue_t *qu, val_t v) {
     node_t *next = (node_t *) malloc(sizeof(node_t));
     next->val = v;
 
-    mut_lock(qu->mut);
+    mut_lock2(qu->mut);
     node = qu->root;
     if (!node || !VAL_GT(v, node->val)) {
         next->next = qu->root;
         qu->root = next;
-        mut_unlock(qu->mut);
+        mut_unlock2(qu->mut);
         return 0;
     }
 
@@ -33,7 +33,7 @@ int qputv(queue_t *qu, val_t v) {
     
     next->next = node->next;
     node->next = next;
-    mut_unlock(qu->mut);
+    mut_unlock2(qu->mut);
     return pos;
 }
 
@@ -52,13 +52,13 @@ int qdel(queue_t *qu) {
 }
 
 int qrm1(queue_t *qu, int y) {
-    mut_lock(qu->mut);
+    mut_lock2(qu->mut);
     node_t *node = qu->root;
 
     if (node && node->val.y == y) {
         node_t *t = qu->root;
         qu->root = node->next;
-        mut_unlock(qu->mut);
+        mut_unlock2(qu->mut);
         free(t);
         return 0;
     }
@@ -70,19 +70,19 @@ int qrm1(queue_t *qu, int y) {
         if (node->next->val.y == y) {
             node_t *t = node->next;
             node->next = node->next->next;
-            mut_unlock(qu->mut);
+            mut_unlock2(qu->mut);
             free(t);
             return c;
         }
         
         node = node->next;
     }
-    mut_unlock(qu->mut);
+    mut_unlock2(qu->mut);
     return -1;
 }
 
 int qpop(queue_t *qu) {
-    mut_lock(qu->mut);
+    mut_lock2(qu->mut);
     int r = -1;
     if (qu->root) {
         r = qu->root->val.y;
@@ -90,13 +90,13 @@ int qpop(queue_t *qu) {
         qu->root = t->next;
         free(t);
     }
-    mut_unlock(qu->mut);
+    mut_unlock2(qu->mut);
     return r;
 }
 
 void qprint(queue_t *qu) {
 
-    mut_lock(qu->mut);
+    mut_lock2(qu->mut);
     node_t *node = qu->root;
 
     while(node) {
@@ -106,5 +106,5 @@ void qprint(queue_t *qu) {
         node = node->next;
     }
     // printf("\n");
-    mut_unlock(qu->mut);
+    mut_unlock2(qu->mut);
 }

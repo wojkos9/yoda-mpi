@@ -3,6 +3,7 @@
 
 #include <mpi.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include "queue.h"
 #include "state.h"
@@ -38,7 +39,7 @@ extern int blocked;
 extern int base_time;
 extern int cx, cy, cz, copp, cown, opp_base, offset;
 
-extern pthread_mutex_t mut,
+extern sem_t mut,
 start_mut,
 pair_mut,
 lamut,

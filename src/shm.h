@@ -2,6 +2,9 @@
 #define __SHM_H__
 
 #include <pthread.h>
+#include <semaphore.h>
+
+#include "utils.h"
 
 extern void init_shm();
 
@@ -34,7 +37,7 @@ extern shm_info_t *shm_info_arr;
 extern shm_common_t *shm_common;
 extern int HAS_SHM, MEM_INIT;
 
-extern pthread_mutex_t memlock;
+extern mut_decl(memlock);
 
 // #define SHM_SAFE(op) if (MEM_INIT) {\
 //             mut_lock(shm_common->mut); \
@@ -48,9 +51,9 @@ extern pthread_mutex_t memlock;
 
 #if 1
 #define SHM_SAFE2(op) if (MEM_INIT) {\
-            mut_lock(shm_common->mut); \
+            mut_lock2(shm_common->mut); \
             op \
-            mut_unlock(shm_common->mut); \
+            mut_unlock2(shm_common->mut); \
             }
 #else
 #define SHM_SAFE2 SHM_SAFE

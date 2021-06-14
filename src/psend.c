@@ -5,7 +5,7 @@
 
 #include <pthread.h>
 
-extern pthread_mutex_t lamut;
+extern mut_decl(lamut);
 
 
 int psend1(int dest, MTYP typ, int data) {

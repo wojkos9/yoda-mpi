@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <semaphore.h>
+
 #include "utils.h"
 
 #include "main.h"
@@ -20,7 +22,7 @@
 shm_common_t *shm_common;
 shm_info_t *shm_info_arr;
 
-pthread_mutex_t memlock = PTHREAD_MUTEX_INITIALIZER;
+mut_decl(memlock);
 
 void init_sh_mutex(pthread_mutex_t *mut, int lock) {
     pthread_mutexattr_t attr;

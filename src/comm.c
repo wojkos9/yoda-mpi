@@ -76,7 +76,7 @@ void comm_th_xy() {
             case ORD:
                 i = pkt.src - opp_base;
                 places[i] = pkt.data;
-                if (state == ST_AWAIT && pkt.data == place) {
+                if (pair == -1 && state == ST_AWAIT && pkt.data == place) {
                     set_pair(pkt.src);
                     mut_unlock(pair_mut); // -> ST_PAIR
                 }
