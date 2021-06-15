@@ -42,10 +42,11 @@ extern int cx, cy, cz, copp, cown, opp_base, offset;
 extern sem_t mut,
 start_mut,
 pair_mut,
+crit_mut,
 lamut,
 can_leave;
-extern pthread_mutex_t binmut;
-extern int binsem;
+extern pthread_mutex_t wake_mut;
+extern int z_awake;
 
 extern int *places;
 extern queue_t qu, qu_x, qu_z;
@@ -53,7 +54,7 @@ extern queue_t qu, qu_x, qu_z;
 extern void comm_th_xy();
 extern void comm_th_z();
 
-
+#define ERR_XZ_EXCL 2
 
 
 #endif // __MAIN_H__

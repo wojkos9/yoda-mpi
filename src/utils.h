@@ -2,6 +2,7 @@
 #define UTILS_H_
 
 #include <stdio.h>
+#include <string.h>
 #include "state.h"
 
 #define log(...) fprintf(stderr, "[%d] " fmt, rank, __VA_ARGS__)
@@ -26,6 +27,10 @@
 extern int DEBUG_LVL;
 
 #define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__)
+
+static char _tmp[16];
+#define shmprintn(field, n, i) snprintf(_tmp, n+1, "%*d", n, i % (int)1e##n), memcpy(shm_info_arr[rank].field, _tmp, n)
+
 
 #define MAX(a, b) ((a)>(b)?(a):(b))
 

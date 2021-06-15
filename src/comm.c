@@ -163,12 +163,12 @@ void comm_th_z() {
         switch (status.MPI_TAG) {
             case WAKE:
                 if (state == ST_SLEEP) {
-                    pthread_mutex_lock(&binmut);
-                    if (binsem == 0) {
+                    pthread_mutex_lock(&wake_mut);
+                    if (z_awake == 0) {
                         mut_unlock(mut);
-                        binsem = 1;
+                        z_awake = 1;
                     }
-                    pthread_mutex_unlock(&binmut);
+                    pthread_mutex_unlock(&wake_mut);
                 }
                 break;
             case ACK:
