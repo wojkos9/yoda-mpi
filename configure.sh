@@ -10,9 +10,7 @@ rm $src/*
 
 for f in `ls $pre`; do
     if [ "$noshm" -eq 1 ]; then
-        echo NOSHM
-        if [[ "$f" =~ shm ]]; then 
-        echo CONT
+        if [[ "$f" =~ shm ]]; then
         continue; fi
     fi
     awk -P "/\/\/ifndef ($excl)$/ {token=\$NF;flag=1};\
