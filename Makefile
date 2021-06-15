@@ -3,9 +3,11 @@ CFLAGS := -pthread -g -lrt
 SRC := src
 BIN := proj
 
+CONFFLAGS := ALL
+
 OUT := out
 
-$(OUT)/$(BIN): $(SRC)/* $(OUT)/
+$(OUT)/$(BIN): $(SRC)/* $(OUT)/ src
 	$(CC) -o$@ $(wildcard $(SRC)/*.c) $(CFLAGS)
 
 %/:
@@ -24,3 +26,6 @@ test/out/test-%: test/test-%.c $(SRC)/%.c
 
 test-%: test/out/ test/out/test-%
 	./$<$@
+
+src: pre/*
+	./configure.sh $(CONFFLAGS)
