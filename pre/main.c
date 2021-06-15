@@ -144,9 +144,11 @@ void* main_th_xy(void *p) {
 
         if (styp == PT_X) {
             //ifndef NOSHM
+            //ifndef NOERR
             SHM_SAFE2(
                 shm_common->x_crit -= 1;
             )
+            //endif NOERR
             //endif NOSHM
             release_z();
         } else {
@@ -187,6 +189,7 @@ void *main_th_z(void *p) {
         change_state(ST_CRIT);
 
         //ifndef NOSHM
+        //ifndef NOERR
         int err = 0;
         SHM_SAFE2(
             shm_common->z_crit += 1;
@@ -194,10 +197,11 @@ void *main_th_z(void *p) {
                 err = ERR_XZ_EXCL;
             }
         )
-
+        
         if (err) {
             sync_all_with_msg(FIN, err);
         }
+        //endif NOERR
         notify_enter();
         //endif NOSHM
         
@@ -207,9 +211,11 @@ void *main_th_z(void *p) {
         SHM_SAFE2(
             shm_common->curr_energy += 1;
         )
+        //ifndef NOERR
         SHM_SAFE2(
             shm_common->z_crit -= 1;
         )
+        //endif NOERR
         //endif NOSHM
 
         debug(1, "+++++++++INC++++++++++");

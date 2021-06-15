@@ -63,9 +63,11 @@ void try_leave() {
 
             wakeup_z();
             //ifndef NOSHM
+            //ifndef NOSHOWWAKE
             SHM_SAFE(
                 shm_info_arr[rank].msg = '!';
             )
+            //endif NOSHOWWAKE
             //endif NOSHM
         }
         mut_unlock(can_leave); // X -> ST_IDLE
@@ -76,7 +78,7 @@ void inc_ack() {
     ++ack_count;
     //ifndef NOSHM
     SHM_SAFE(
-        // shmprintn(pad3, 3, ack_count);
+        shm_info_arr[rank].a = ack_count+'0';
     )
     //endif NOSHM
 }
@@ -85,7 +87,7 @@ void zero_ack() {
     ack_count = 0;
     //ifndef NOSHM
     SHM_SAFE(
-        // shmprintn(pad3, 3, ack_count);
+        shm_info_arr[rank].a = ack_count+'0';
     )
     //endif NOSHM
 }
@@ -168,12 +170,14 @@ void try_enter() { // X
             zero_ack();
             int err = 0;
             //ifndef NOSHM
+            //ifndef NOERR
             SHM_SAFE2(
                 shm_common->x_crit += 1;
                 if (shm_common->z_crit) {
                     err = ERR_XZ_EXCL;
                 }
             )
+            //endif NOERR
             //endif NOSHM
             --energy;
             debug(9, "TO_CRIT");
@@ -185,13 +189,17 @@ void try_enter() { // X
             SHM_SAFE2(
                 shm_common->tot_en += 1;
                 shm_common->curr_energy -= 1;
+                //ifndef NOERR
                 if (shm_common->curr_energy  < 0) {
                     err = 1;
                 }
+                //endif NOERR
             )
+            //ifndef NOERR
             if (err) {
                 sync_all_with_msg(FIN, err);
             }
+            //endif NOERR
 
             SHM_SAFE(
                 shm_info_arr[rank].c = energy + '0';

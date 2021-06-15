@@ -27,7 +27,7 @@ test/out/test-%: test/test-%.c $(SRC)/%.c
 test-%: test/out/ test/out/test-%
 	./$<$@
 
-src: pre/*
+src: pre/* configure.sh
 	./configure.sh $(CONFFLAGS)
 
 yoda-mpi:
