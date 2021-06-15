@@ -14,15 +14,11 @@
 #include <string.h>
 #include <semaphore.h>
 
-#include "shm.h"
 #include "helpers.h"
 
 __thread int tid = 0;
 
 int base_time = 100000;
-
-int enter_count = 0;
-int ok_count = 0;
 
 void random_sleep2(int min, int max) {
     usleep((min + rand() % (max-min)) * base_time);
@@ -33,8 +29,11 @@ void random_sleep(int max) {
 
 int COUNTS_OVR = 0;
 
+//ifndef NOSHM
 int HAS_SHM = 0;
 int MEM_INIT = 0;
+int enter_count = 0;
+//endif NOSHM
 
 ST state;
 
@@ -75,8 +74,9 @@ int messenger = 0;
 void* main_th_xy(void *p) {
     tid = 1;
     debug(20, "MAIN %d %d %d", rank, cown, copp);
-
+    //ifndef NOSHM
     try_init_shm();
+    //endif NOSHM
 
     while(state != ST_FIN) {
         start_order();
@@ -86,9 +86,11 @@ void* main_th_xy(void *p) {
         debug(10, "PAIR %d @ %d", pair, place);
 
         if (styp == PT_X) {
+            //ifndef NOSHM
             SHM_SAFE(
                 shm_info_arr[rank].msg = '#';
             )
+            //endif NOSHM
             debug(15, "------START ENTER------");
             start_enter_crit(); // ST_PAIR
             
@@ -99,9 +101,11 @@ void* main_th_xy(void *p) {
 
             psend_to_typ(styp, DEC, 0); // ST_CRIT
 
+            //ifndef NOSHM
             SHM_SAFE(
                 shm_info_arr[rank].msg = 0;
             )
+            //endif NOSHM
 
             change_state(ST_WORK);
 
@@ -118,8 +122,10 @@ void* main_th_xy(void *p) {
             
         }
 
+        //ifndef NOSHM
         // shm
         notify_enter();
+        //endif NOSHM
 
         debug(15, "START %d", pair);
 
@@ -135,9 +141,11 @@ void* main_th_xy(void *p) {
         set_pair(-1);
 
         if (styp == PT_X) {
+            //ifndef NOSHM
             SHM_SAFE2(
                 shm_common->x_crit -= 1;
             )
+            //endif NOSHM
             release_z();
         } else {
             dack_count = 0;
@@ -160,7 +168,9 @@ int z_awake = 0;
 
 void *main_th_z(void *p) {
     tid = 1;
+    //ifndef NOSHM
     try_init_shm();
+    //endif NOSHM
 
     while (state != ST_FIN) {
         z_awake = 0;
@@ -174,6 +184,7 @@ void *main_th_z(void *p) {
         mut_lock(start_mut);
         change_state(ST_ZCRIT);
 
+        //ifndef NOSHM
         int err = 0;
         SHM_SAFE2(
             shm_common->z_crit += 1;
@@ -185,19 +196,19 @@ void *main_th_z(void *p) {
         if (err) {
             sync_all_with_msg(FIN, err);
         }
-
         notify_enter();
-
+        //endif NOSHM
+        
         random_sleep(10);
 
-        
+        //ifndef NOSHM
         SHM_SAFE2(
             shm_common->curr_energy += 1;
         )
-
         SHM_SAFE2(
             shm_common->z_crit -= 1;
         )
+        //endif NOSHM
 
         debug(1, "+++++++++INC++++++++++");
         change_state(ST_SLEEP);
@@ -267,12 +278,14 @@ int main(int argc, char **argv)
 
     // by default wait for unlock
     mut_init(mut);
-    mut_init(memlock);
     mut_init(can_leave);
     mut_init(start_mut);
     mut_init(pair_mut);
     mut_init(crit_mut);
     mut_init2(lamut, 1);
+    //ifndef NOSHM
+    mut_init(memlock);
+    //endif NOSHM
 
     pthread_t th;
 

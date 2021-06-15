@@ -1,7 +1,6 @@
 #include "state.h"
 #include "main.h"
 #include "utils.h"
-#include "shm.h"
 
 #include <stdlib.h>
 #include <getopt.h>
@@ -19,9 +18,11 @@ int parse_args(int argc, char *argv[]) {
             case 'v':
                 DEBUG_LVL = atoi(optarg);
                 break;
+            //ifndef NOSHM
             case 's':
                 HAS_SHM = 1;
                 break;
+            //endif NOSHM
             case 'c':
                 cx = atoi(argv[optind-1]);
                 cy = atoi(argv[optind]);

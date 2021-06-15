@@ -5,6 +5,7 @@
 #include <semaphore.h>
 
 #include "utils.h"
+#include "mut.h"
 
 extern void init_shm();
 

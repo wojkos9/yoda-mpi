@@ -1,7 +1,9 @@
 # Yoda MPI
 
 X, Y, Z process types.
-
+## Compilation:
+`$ ./configure.sh [NOSHM]`\
+`$ make`
 ## Running:
 `$ ./run.sh -c cx cy cz [-e energy] [-v verbosity level] [-s (use shared memory for debugging)] [-t time_mul (more = longer sleeps)]`
 

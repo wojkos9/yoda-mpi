@@ -1,6 +1,10 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#include <stdio.h>
+
+#include "mut.h"
+
 #include <mpi.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -9,6 +13,11 @@
 #include "state.h"
 
 #include "types.h"
+//ifndef NOSHM
+#include "shm.h"
+//endif NOSHM
+
+
 
 extern MPI_Datatype PAK_T;
 

@@ -2,7 +2,6 @@
 #include "state.h"
 #include "utils.h"
 #include "queue.h"
-#include "shm.h"
 #include "helpers.h"
 
 int inc_count = 0;
@@ -90,15 +89,19 @@ void comm_th_xy() {
                 offset += 1;
                 psend(pkt.src, DACK);
                 break;
+            //ifndef NOSHM
             case MEM: // shm
                 HAS_SHM = pkt.data;
                 mut_unlock(memlock);
                 break;
+            //endif NOSHM
             case DEC: // X
                 --energy;
+                //ifndef NOSHM
                 SHM_SAFE(
                     shm_info_arr[rank].c = energy + '0';
                 )
+                //endif NOSHM
                 qrm1(&qu, pkt.src);
                 offset += 1;
                 psend(pkt.src, DACK);
@@ -127,21 +130,16 @@ void comm_th_xy() {
             case INC: // X
                 ++energy;
                 ++inc_count;
+                //ifndef NOSHM
                 SHM_SAFE(
                     shm_info_arr[rank].c = energy + '0';
                 )
+                //endif NOSHM
                 if (inc_count == cz) {
                     inc_count = 0;
                     unblock();
                     
                     try_enter();
-                }
-                break;
-            case SHM_OK: // shm
-                ++ok_count;
-                debug(0, "OK %d", ok_count);
-                if (ok_count == size) {
-                    // mut_unlock(start_mut);
                 }
                 break;
         }
@@ -177,19 +175,15 @@ void comm_th_z() {
                     mut_unlock(start_mut);
                 }
                 break;
+            //ifndef NOSHM
             case MEM:
                 HAS_SHM = pkt.data;
                 mut_unlock(memlock);
                 break;
+            //endif NOSHM
             case FIN:
                 debug(0, "FIN");
                 fin = 1;
-                break;
-            case SHM_OK: // shm
-                ++ok_count;
-                if (ok_count == size) {
-                    // mut_unlock(start_mut);
-                }
                 break;
         }
     }

@@ -1,5 +1,4 @@
 #include "main.h"
-#include "shm.h"
 
 void release_z() {
     int pid;
@@ -20,18 +19,22 @@ void release_z() {
 void block() {
     blocked = 1;
     // release_z();
+    //ifndef NOSHM
     SHM_SAFE(
         shm_info_arr[rank].x = SYMB_B;
     )
+    //endif NOSHM
     debug(10, "BLOCK");
 }
 
 void unblock() {
     blocked = 0;
     
+    //ifndef NOSHM
     SHM_SAFE(
         shm_info_arr[rank].x = SYMB_U;
     )
+    //endif NOSHM
     debug(10, "UNBLOCK");
 }
 
@@ -45,9 +48,11 @@ void release_queue() {
 int tot_wake = 0;
 void wakeup_z() {
     debug(10, "\t\t\t*WAKING");
+    //ifndef NOSHM
     SHM_SAFE(
         shm_info_arr[rank].y = ++tot_wake;
     )
+    //endif NOSHM
     psend_to_typ_all(PT_Z, WAKE, 0);
 }
 
@@ -57,9 +62,11 @@ void try_leave() {
             block();
 
             wakeup_z();
+            //ifndef NOSHM
             SHM_SAFE(
                 shm_info_arr[rank].msg = '!';
             )
+            //endif NOSHM
         }
         mut_unlock(can_leave); // X -> ST_IDLE
     }
@@ -67,22 +74,23 @@ void try_leave() {
 
 void inc_ack() {
     ++ack_count;
-    
+    //ifndef NOSHM
     SHM_SAFE(
-        shm_info_arr[rank].a = ack_count+'0';
         // shmprintn(pad3, 3, ack_count);
     )
+    //endif NOSHM
 }
 
 void zero_ack() {
     ack_count = 0;
-    
+    //ifndef NOSHM
     SHM_SAFE(
-        shm_info_arr[rank].a = ack_count+'0';
         // shmprintn(pad3, 3, ack_count);
     )
+    //endif NOSHM
 }
 
+//ifndef NOSHM
 void try_init_shm() {
     if (HAS_SHM) {
         
@@ -90,38 +98,37 @@ void try_init_shm() {
             init_shm();
             debug(0, "HAS SHM: %d", HAS_SHM);
 
-            // sync_all_with_msg(SHM_OK, 0);
-            // mut_lock(start_mut);
-
-            
-            // if (!MEM_INIT) {
-            //     sync_all_with_msg(FIN, 0);
-            // }
         }
     }
-
 }
+//endif NOSHM
 
 void set_place(int newplace) {
     place = newplace;
+    //ifndef NOSHM
     SHM_SAFE(
         shmprintn(pad4, 3, place);
     )
+    //endif NOSHM
 }
 
 void change_state(ST new) {
     state = new;
+    //ifndef NOSHM
     SHM_SAFE(
         shm_info_arr[rank].ch = state_map[state][0];
     )
+    //endif NOSHM
     debug(15, "\t\t\t\t\t-> STATE %s", state_map[new]);
 }
 
 void set_pair(int new) {
     pair = new;
+    //ifndef NOSHM
     SHM_SAFE(
         shm_info_arr[rank].pair = '0' + pair;
     )
+    //endif NOSHM
 }
 
 void try_reserve_place() {
@@ -145,13 +152,14 @@ void try_reserve_place() {
         }
     }
 }
-
+//ifndef NOSHM
 void notify_enter() {
     ++enter_count;
     SHM_SAFE(
         shmprintn(pad2, 3, enter_count); 
     )
 }
+//endif NOSHM
 
 void try_enter() { // X
     debug(10, "////// TRY ENTER \\\\\\\\\\\\");
@@ -159,21 +167,21 @@ void try_enter() { // X
         if (!blocked) {
             zero_ack();
             int err = 0;
-
+            //ifndef NOSHM
             SHM_SAFE2(
                 shm_common->x_crit += 1;
                 if (shm_common->z_crit) {
                     err = ERR_XZ_EXCL;
                 }
             )
+            //endif NOSHM
             --energy;
             debug(9, "TO_CRIT");
             change_state(ST_CRIT);
             mut_unlock(crit_mut); // -> ST_CRIT
 
             debug(1, "-------DEC--------");
-
-            
+            //ifndef NOSHM
             SHM_SAFE2(
                 shm_common->tot_en += 1;
                 shm_common->curr_energy -= 1;
@@ -184,11 +192,11 @@ void try_enter() { // X
             if (err) {
                 sync_all_with_msg(FIN, err);
             }
-            
 
             SHM_SAFE(
                 shm_info_arr[rank].c = energy + '0';
             )
+            //endif NOSHM
             
 
         }
@@ -200,8 +208,6 @@ void start_order() {
     int ts = lamport;
     qput(&qu, ts, rank);
 
-    
-    
     zero_ack();
     psend_to_typ(styp, PAR, ts);
     mut_unlock(lamut);
@@ -214,13 +220,11 @@ void start_order() {
 void start_enter_crit() { // X
     dack_count = 0;
 
-    // mut_lock(lamut);
     own_req.x = lamport;
     
     change_state(ST_PAIR);
 
     psend_to_typ(styp, REQ, own_req.x);
-    // mut_unlock(lamut);
 
     if (cown == 1) {
         try_enter();
