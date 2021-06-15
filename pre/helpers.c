@@ -162,7 +162,7 @@ void notify_enter() {
 //endif NOSHM
 
 void try_enter() { // X
-    debug(10, "////// TRY ENTER \\\\\\\\\\\\");
+    debug(30, "////// TRY ENTER \\\\\\\\\\\\");
     if (state == ST_PAIR && ack_count >= cown - energy) {
         if (!blocked) {
             zero_ack();

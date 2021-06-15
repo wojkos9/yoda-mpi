@@ -22,11 +22,12 @@
 #define colend printf("%c[%d;%dm\n", 27, 0, 37)
 #define println(FORMAT, ...) printf("%c[%d;%dm [tid %d ts %d st %c b %d a %d E %d R %d] %c: " FORMAT "%c[%d;%dm\n", 27, (1 + (rank / 7)) % 2, 31 + (6 + rank) % 7, rank, lamport, state_map[state][0], blocked, ack_count, energy, own_req.x, "CW"[tid], ##__VA_ARGS__, 27, 0, 37)
 
-#define col(...) colbeg, __VA_ARGS__, colend
+#define col(...) if (!ONLY_ZERO || rank==0) {colbeg, __VA_ARGS__, colend;}
 
 extern int DEBUG_LVL;
+extern int ONLY_ZERO;
 
-#define debug(lvl, ...) if (DEBUG_LVL >= lvl) println(__VA_ARGS__)
+#define debug(lvl, ...) if (DEBUG_LVL >= lvl && (!ONLY_ZERO || rank==0)) println(__VA_ARGS__)
 
 static char _tmp[16];
 #define shmprintn(field, n, i) snprintf(_tmp, n+1, "%*d", n, i % (int)1e##n), memcpy(shm_info_arr[rank].field, _tmp, n)

@@ -13,7 +13,6 @@
 (WORK) \
 (LEAVE) \
 (SLEEP) \
-(ZCRIT) \
 
 typedef enum {
 #define EXPAND_FUN(x) PREFIX_EXPAND(ST_, x)

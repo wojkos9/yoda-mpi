@@ -42,6 +42,7 @@ PTYP styp, otyp;
 int pair = -1;
 
 int DEBUG_LVL;
+int ONLY_ZERO = 0;
 
 MPI_Datatype PAK_T;
 
@@ -72,6 +73,7 @@ int dack_count = 0;
 int messenger = 0;
 
 void* main_th_xy(void *p) {
+
     tid = 1;
     debug(20, "MAIN %d %d %d", rank, cown, copp);
     //ifndef NOSHM
@@ -182,7 +184,7 @@ void *main_th_z(void *p) {
         psend_to_typ_all(PT_X, ZREQ, 0);
 
         mut_lock(start_mut);
-        change_state(ST_ZCRIT);
+        change_state(ST_CRIT);
 
         //ifndef NOSHM
         int err = 0;
