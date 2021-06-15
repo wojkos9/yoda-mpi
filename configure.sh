@@ -6,6 +6,7 @@ noshm=`[[ "$excl" =~ NOSHM ]] && echo 1 || echo 0`
 pre=pre
 src=src
 
+mkdir src
 rm $src/*
 
 for f in `ls $pre`; do

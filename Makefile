@@ -13,7 +13,7 @@ $(OUT)/$(BIN): $(SRC)/* $(OUT)/ src
 %/:
 	mkdir -p $@
 
-.PHONY: clean
+.PHONY: clean yoda-mpi
 clean:
 	rm -r $(OUT)
 	rm -r test/out
@@ -29,3 +29,8 @@ test-%: test/out/ test/out/test-%
 
 src: pre/*
 	./configure.sh $(CONFFLAGS)
+
+yoda-mpi:
+	rm -rf $@
+	mkdir $@
+	cp -r configure.sh run.sh pre Makefile $@
