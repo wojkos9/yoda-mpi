@@ -19,7 +19,7 @@ for f in `ls $pre`; do
         continue; fi
     fi
     echo $f >&2
-    awk -P "/\/\/ifndef ($excl)$/ {token=\$NF;flag=1};\
+    awk -P "/\/\/ifndef ($excl)$/ {if (!flag){token=\$NF;flag=1;}};\
     {if (!flag) print};\
     /\/\/endif ($excl)/ {if (\$NF==token) flag=0}" $pre/$f > $src/$f
 done
